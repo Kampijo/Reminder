@@ -1,22 +1,16 @@
 package com.example.kyle.reminder;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -24,9 +18,9 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<String> reminders = new ArrayList<String>();
     private ArrayAdapter<String> adapter;
-    public static final String message = "";
     private ReminderData data;
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
@@ -47,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String item = (String) adapterView.getItemAtPosition(i);
                 Intent intent = new Intent(MainActivity.this, SeeReminder.class);
-                intent.putExtra(message, item);
+                intent.putExtra("item", item);
                 startActivity(intent);
             }
         });
@@ -63,6 +57,32 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // action with ID action_add selected
+            case R.id.action_add:
+                Intent intent = new Intent(this, AddReminder.class);
+                intent.putStringArrayListExtra("reminders", reminders);
+                startActivity(intent);
+                break;
+            // action with ID action_settings was selected
+            case R.id.action_settings:
+
+                break;
+            default:
+                break;
+        }
+
+        return true;
     }
 
 
@@ -81,26 +101,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void addReminder(View view) {
-        EditText editText = (EditText) findViewById(R.id.editText);
-        ListView listView = (ListView) findViewById(R.id.listView);
-
-        String reminder = editText.getText().toString();
-        editText.getText().clear();
-        data.getEditor().putString(reminder, reminder);
-        data.getEditor().commit();
-        reminders.add(reminder);
-
-
-    }
 
     private AlertDialog AskOption(int i, String s) {
         final int deleteIndex = i;
         final String deleteItem = s;
-        AlertDialog myQuittingDialogBox = new AlertDialog.Builder(this)
+        AlertDialog deleteConfirm = new AlertDialog.Builder(this)
                 //set message, title, and icon
                 .setTitle("Confirm")
-                .setMessage("Do you want to Delete?")
+                .setMessage("Do you want to delete?")
 
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
@@ -120,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .create();
-        return myQuittingDialogBox;
+        return deleteConfirm;
 
     }
 }
