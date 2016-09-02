@@ -3,10 +3,15 @@
 
 
     <item
-        android:id="@+id/action_add"
-        android:icon="@drawable/ic_add_box_white_48dp"
-        android:title="Add"
+        android:id="@+id/action_add_note"
+        android:icon="@drawable/ic_note_add_white_48dp"
+        android:title="Add Note"
         app:showAsAction="always"   />
+    <item
+        android:id="@+id/action_add_alert"
+        android:icon="@drawable/ic_add_alert_white_48dp"
+        android:title="Add Alert"
+        app:showAsAction="always"  />
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"

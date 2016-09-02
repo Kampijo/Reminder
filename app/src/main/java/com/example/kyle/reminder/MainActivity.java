@@ -68,15 +68,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            // action with ID action_add selected
-            case R.id.action_add:
+            case R.id.action_add_note:
                 Intent intent = new Intent(this, AddReminder.class);
                 intent.putStringArrayListExtra("reminders", reminders);
                 startActivity(intent);
                 break;
-            // action with ID action_settings was selected
+            case R.id.action_add_alert:
+                break;
             case R.id.action_settings:
-
                 break;
             default:
                 break;
