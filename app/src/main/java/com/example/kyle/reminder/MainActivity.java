@@ -2,56 +2,68 @@ package com.example.kyle.reminder;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import java.util.ArrayList;
-import java.util.Map;
+import android.widget.SimpleCursorAdapter;
+
 
 public class MainActivity extends AppCompatActivity {
 
-    ArrayList<String> reminders = new ArrayList<String>();
-    private ArrayAdapter<String> adapter;
-    private ReminderData data;
+    private noteDatabase database;
+    private SimpleCursorAdapter cursorAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        data = new ReminderData(this);
-        data.getEditor().commit();
+
+
+        database = new noteDatabase(this);
+        final Cursor cursor = database.getAllNotes();
+        String[] columns = new String[]{
+                noteDatabase.DB_COLUMN_CONTENT
+        };
+        int[] widgets = new int[]{
+                R.id.noteName
+        };
+
+        cursorAdapter = new SimpleCursorAdapter(this, R.layout.note_layout,
+                cursor, columns, widgets, 0);
 
         ListView listView = (ListView) findViewById(R.id.listView);
-        loadReminders();
-        adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_expandable_list_item_1, reminders);
-        listView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+        listView.setAdapter(cursorAdapter);
+        requery();
 
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String item = (String) adapterView.getItemAtPosition(i);
-                Intent intent = new Intent(MainActivity.this, SeeReminder.class);
-                intent.putExtra("item", item);
+                Cursor item = (Cursor) adapterView.getItemAtPosition(i);
+                int id = item.getInt(item.getColumnIndex(noteDatabase.DB_COLUMN_ID));
+                String note = item.getString(item.getColumnIndex(noteDatabase.DB_COLUMN_CONTENT));
+                Log.i("tag", ""+id);
+                Intent intent = new Intent(MainActivity.this, seeNote.class);
+                intent.putExtra("noteID", id);
                 startActivity(intent);
+
             }
         });
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String item = (String) adapterView.getItemAtPosition(i);
-                AlertDialog confirm = AskOption(i, item);
+                Cursor item = (Cursor) adapterView.getItemAtPosition(i);
+                int id = item.getInt(item.getColumnIndex(noteDatabase.DB_COLUMN_ID));
+                AlertDialog confirm = AskOption(id);
                 confirm.show();
-
                 return true;
             }
         });
@@ -69,9 +81,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_note:
-                Intent intent = new Intent(this, AddReminder.class);
-                intent.putStringArrayListExtra("reminders", reminders);
+                Intent intent = new Intent(this, addNote.class);
                 startActivity(intent);
+                finish();
                 break;
             case R.id.action_add_alert:
                 break;
@@ -84,26 +96,8 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
-
-    private void update(int i, String s){
-        reminders.remove(i);
-        data.getEditor().remove(s);
-        data.getEditor().commit();
-        adapter.notifyDataSetChanged();
-    }
-
-    private void loadReminders(){
-        Map<String, ?> savedReminders = data.getData().getAll();
-        for(Map.Entry<String, ?> entry: savedReminders.entrySet()){
-            reminders.add(entry.getKey());
-        }
-    }
-
-
-    private AlertDialog AskOption(int i, String s) {
-        final int deleteIndex = i;
-        final String deleteItem = s;
+    private AlertDialog AskOption(int id) {
+        final int deleteId = id;
         AlertDialog deleteConfirm = new AlertDialog.Builder(this)
                 //set message, title, and icon
                 .setTitle("Confirm")
@@ -112,7 +106,8 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        update(deleteIndex, deleteItem);
+                        database.deleteNote(deleteId);
+                        requery();
                         dialog.dismiss();
                     }
 
@@ -129,6 +124,11 @@ public class MainActivity extends AppCompatActivity {
                 .create();
         return deleteConfirm;
 
+    }
+
+    private void requery(){
+        Cursor cursor = database.getAllNotes();
+        cursorAdapter.changeCursor(cursor);
     }
 }
 

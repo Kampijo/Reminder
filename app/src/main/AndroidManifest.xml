@@ -15,8 +15,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SeeReminder" />
-        <activity android:name=".AddReminder"></activity>
+        <activity android:name=".addNote" />
+        <activity android:name=".seeNote"></activity>
     </application>
 
 </manifest>
