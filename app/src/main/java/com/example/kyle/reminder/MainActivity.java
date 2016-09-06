@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,7 +16,7 @@ import android.widget.SimpleCursorAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
-    private noteDatabase database;
+    private reminderDatabase database;
     private SimpleCursorAdapter cursorAdapter;
 
     @Override
@@ -27,10 +26,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        database = new noteDatabase(this);
+        database = new reminderDatabase(this);
         final Cursor cursor = database.getAllNotes();
         String[] columns = new String[]{
-                noteDatabase.DB_COLUMN_CONTENT
+                reminderDatabase.DB_COLUMN_CONTENT
         };
         int[] widgets = new int[]{
                 R.id.noteName
@@ -48,12 +47,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Cursor item = (Cursor) adapterView.getItemAtPosition(i);
-                int id = item.getInt(item.getColumnIndex(noteDatabase.DB_COLUMN_ID));
-                String note = item.getString(item.getColumnIndex(noteDatabase.DB_COLUMN_CONTENT));
-                Log.i("tag", ""+id);
-                Intent intent = new Intent(MainActivity.this, seeNote.class);
+                int id = item.getInt(item.getColumnIndex(reminderDatabase.DB_COLUMN_ID));
+                String note = item.getString(item.getColumnIndex(reminderDatabase.DB_COLUMN_CONTENT));
+                Intent intent = new Intent(MainActivity.this, createOrEditNote.class);
                 intent.putExtra("noteID", id);
                 startActivity(intent);
+                finish();
 
             }
         });
@@ -61,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Cursor item = (Cursor) adapterView.getItemAtPosition(i);
-                int id = item.getInt(item.getColumnIndex(noteDatabase.DB_COLUMN_ID));
+                int id = item.getInt(item.getColumnIndex(reminderDatabase.DB_COLUMN_ID));
                 AlertDialog confirm = AskOption(id);
                 confirm.show();
                 return true;
@@ -73,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -81,11 +80,14 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_note:
-                Intent intent = new Intent(this, addNote.class);
-                startActivity(intent);
+                Intent intent0 = new Intent(this, createOrEditNote.class);
+                startActivity(intent0);
                 finish();
                 break;
             case R.id.action_add_alert:
+                Intent intent1 = new Intent(this, createOrEditAlert.class);
+                startActivity(intent1);
+                finish();
                 break;
             case R.id.action_settings:
                 break;
