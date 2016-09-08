@@ -61,7 +61,7 @@ public class createOrEditNote extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_del_note:
                 if(id > 0){
-                    database.deleteNote(id);
+                    database.deleteItem(id);
                     startActivity(new Intent(this, MainActivity.class));
                     finish();
                 }

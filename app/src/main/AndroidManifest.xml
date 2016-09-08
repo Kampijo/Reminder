@@ -17,6 +17,13 @@
         </activity>
         <activity android:name=".createOrEditNote" />
         <activity android:name=".createOrEditAlert"></activity>
+        <receiver android:name=".AlarmSetter">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".AlarmReceiver"></receiver>
+        <service android:name=".AlarmService"></service>
     </application>
 
 </manifest>

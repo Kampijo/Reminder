@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -111,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
 
     private AlertDialog AskOption(int id) {
         final int deleteId = id;
+        final Cursor cursor = database.getItem(id);
+        cursor.moveToFirst();
         AlertDialog deleteConfirm = new AlertDialog.Builder(this)
                 //set message, title, and icon
                 .setTitle("Confirm")
@@ -119,7 +120,14 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        database.deleteNote(deleteId);
+                        if((cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE)).equals("alert")))
+                        {
+                            Intent cancel = new Intent(MainActivity.this, AlarmService.class);
+                            cancel.putExtra("id", deleteId);
+                            cancel.setAction(AlarmService.CANCEL);
+                            startService(cancel);
+                        }
+                        database.deleteItem(deleteId);
                         requery();
                         dialog.dismiss();
                     }
@@ -129,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
 
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-
                         dialog.dismiss();
 
                     }

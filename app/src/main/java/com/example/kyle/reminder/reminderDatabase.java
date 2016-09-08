@@ -52,7 +52,7 @@ public class reminderDatabase extends SQLiteOpenHelper {
         db.insert(DB_TABLE_NAME, null, values);
         return true;
     }
-    public boolean insertAlert(String note, int hour, int minute, int day, int month, int year){
+    public long insertAlert(String note, int hour, int minute, int day, int month, int year){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DB_COLUMN_TYPE, "alert");
@@ -62,8 +62,8 @@ public class reminderDatabase extends SQLiteOpenHelper {
         values.put(DB_COLUMN_DAY, day);
         values.put(DB_COLUMN_MONTH, month);
         values.put(DB_COLUMN_YEAR, year);
-        db.insert(DB_TABLE_NAME, null, values);
-        return true;
+        long id = db.insert(DB_TABLE_NAME, null, values);
+        return id;
     }
     public boolean updateNote(Integer id, String note){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -98,7 +98,7 @@ public class reminderDatabase extends SQLiteOpenHelper {
         Cursor res = db.rawQuery( "SELECT * FROM " + DB_TABLE_NAME, null );
         return res;
     }
-    public Integer deleteNote(Integer id) {
+    public Integer deleteItem(Integer id) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(DB_TABLE_NAME,
                 DB_COLUMN_ID + " = ? ",

@@ -121,8 +121,6 @@ public class createOrEditAlert extends AppCompatActivity {
             }
         });
 
-
-
     }
     public void onBackPressed(){
         Intent intent = new Intent(this, MainActivity.class);
@@ -130,10 +128,18 @@ public class createOrEditAlert extends AppCompatActivity {
         editText.getText().clear();
         if(id > 0){
             database.updateAlert(id, note, hour, minute, day, month, year);
+            Intent cancelPrevious = new Intent(this, AlarmService.class);
+            cancelPrevious.putExtra("id", id);
+            cancelPrevious.setAction(AlarmService.CANCEL);
+            startService(cancelPrevious);
         }
         else {
-            database.insertAlert(note, hour, minute, day, month, year);
+            id = (int) database.insertAlert(note, hour, minute, day, month, year);
         }
+        Intent alarm = new Intent(this, AlarmService.class);
+        alarm.putExtra("id", id);
+        alarm.setAction(AlarmService.CREATE);
+        startService(alarm);
         database.close();
         startActivity(intent);
         finish();
@@ -156,6 +162,7 @@ public class createOrEditAlert extends AppCompatActivity {
 
         return true;
     }
+
     private TimePickerDialog timePicker(){
         TimePickerDialog timePickerDialog = new TimePickerDialog(createOrEditAlert.this,
                 new TimePickerDialog.OnTimeSetListener() {
