@@ -1,11 +1,15 @@
 package com.example.kyle.reminder;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
+import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private reminderDatabase database;
     private SimpleCursorAdapter cursorAdapter;
+    private LocalBroadcastManager broadcastManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,9 +30,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //broadcastManager to wait for AlarmService to finish
+        broadcastManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter filter = new IntentFilter("FINISHED");
+        broadcastManager.registerReceiver(deleteReceiver, filter);
 
+        // sets listView in mainActivity to contents of database
         database = new reminderDatabase(this);
         final Cursor cursor = database.getAllItems();
+
         String[] columns = new String[]{
                 reminderDatabase.DB_COLUMN_CONTENT
         };
@@ -40,9 +51,10 @@ public class MainActivity extends AppCompatActivity {
 
         ListView listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(cursorAdapter);
-        requery();
+        refresh();
 
 
+        //short press checks for item type and executes corresponding activity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -50,13 +62,12 @@ public class MainActivity extends AppCompatActivity {
                 int id = item.getInt(item.getColumnIndex(reminderDatabase.DB_COLUMN_ID));
                 String type = item.getString(item.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE));
 
-                if(type.equalsIgnoreCase("note")){
+                if (type.equalsIgnoreCase("note")) {
                     Intent intent = new Intent(MainActivity.this, createOrEditNote.class);
                     intent.putExtra("noteID", id);
                     startActivity(intent);
                     finish();
-                }
-                else{
+                } else {
                     Intent intent = new Intent(MainActivity.this, createOrEditAlert.class);
                     intent.putExtra("alertID", id);
                     startActivity(intent);
@@ -66,12 +77,13 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        //long press for delete
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Cursor item = (Cursor) adapterView.getItemAtPosition(i);
                 int id = item.getInt(item.getColumnIndex(reminderDatabase.DB_COLUMN_ID));
-                AlertDialog confirm = AskOption(id);
+                AlertDialog confirm = deleteDialog(id);
                 confirm.show();
                 return true;
             }
@@ -108,27 +120,27 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private AlertDialog AskOption(int id) {
+    private AlertDialog deleteDialog(int id) {
         final int deleteId = id;
         final Cursor cursor = database.getItem(id);
         cursor.moveToFirst();
         AlertDialog deleteConfirm = new AlertDialog.Builder(this)
-                //set message, title, and icon
                 .setTitle("Confirm")
                 .setMessage("Do you want to delete?")
 
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        if((cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE)).equals("alert")))
-                        {
+                        //if the selected item for deletion is an alert, cancel the alarm
+                        if ((cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE)).equals("alert"))) {
                             Intent cancel = new Intent(MainActivity.this, AlarmService.class);
                             cancel.putExtra("id", deleteId);
                             cancel.setAction(AlarmService.CANCEL);
                             startService(cancel);
+                        } else {
+                            database.deleteItem(deleteId);
                         }
-                        database.deleteItem(deleteId);
-                        requery();
+                        refresh();
                         dialog.dismiss();
                     }
 
@@ -146,9 +158,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void requery(){
+    private void refresh() {
         Cursor cursor = database.getAllItems();
         cursorAdapter.changeCursor(cursor);
     }
+
+    //receives signal of deletion of alarm from AlarmService and then refreshes UI
+    private BroadcastReceiver deleteReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals("FINISHED")) {
+                refresh();
+            }
+        }
+    };
 }
 

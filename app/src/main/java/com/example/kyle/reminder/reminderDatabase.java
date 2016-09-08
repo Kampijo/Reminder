@@ -23,11 +23,12 @@ public class reminderDatabase extends SQLiteOpenHelper {
     public static final String DB_COLUMN_MONTH = "month";
     public static final String DB_COLUMN_YEAR = "year";
 
-    public reminderDatabase(Context context){
+    public reminderDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+
     @Override
-    public void onCreate(SQLiteDatabase db){
+    public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + DB_TABLE_NAME + "(" +
                 DB_COLUMN_ID + " INTEGER PRIMARY KEY, " +
                 DB_COLUMN_TYPE + " TEXT, " +
@@ -39,12 +40,14 @@ public class reminderDatabase extends SQLiteOpenHelper {
                 DB_COLUMN_YEAR + " INTEGER)"
         );
     }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + DB_TABLE_NAME);
         onCreate(db);
     }
-    public boolean insertNote(String note){
+
+    public boolean insertNote(String note) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DB_COLUMN_TYPE, "note");
@@ -52,7 +55,8 @@ public class reminderDatabase extends SQLiteOpenHelper {
         db.insert(DB_TABLE_NAME, null, values);
         return true;
     }
-    public long insertAlert(String note, int hour, int minute, int day, int month, int year){
+
+    public long insertAlert(String note, int hour, int minute, int day, int month, int year) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DB_COLUMN_TYPE, "alert");
@@ -65,16 +69,18 @@ public class reminderDatabase extends SQLiteOpenHelper {
         long id = db.insert(DB_TABLE_NAME, null, values);
         return id;
     }
-    public boolean updateNote(Integer id, String note){
+
+    public boolean updateNote(Integer id, String note) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DB_COLUMN_CONTENT, note);
         db.update(DB_TABLE_NAME, values, DB_COLUMN_ID + " = ? ",
-                new String[] { Integer.toString(id) } );
+                new String[]{Integer.toString(id)});
         return true;
     }
+
     public boolean updateAlert(Integer id, String note, int hour, int minute, int day,
-                               int month, int year){
+                               int month, int year) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DB_COLUMN_CONTENT, note);
@@ -84,25 +90,28 @@ public class reminderDatabase extends SQLiteOpenHelper {
         values.put(DB_COLUMN_MONTH, month);
         values.put(DB_COLUMN_YEAR, year);
         db.update(DB_TABLE_NAME, values, DB_COLUMN_ID + " = ? ",
-                new String[] { Integer.toString(id) } );
+                new String[]{Integer.toString(id)});
         return true;
     }
-    public Cursor getItem(int id){
+
+    public Cursor getItem(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery( "SELECT * FROM " + DB_TABLE_NAME + " WHERE " +
-                DB_COLUMN_ID + "=?", new String[] { Integer.toString(id) } );
+        Cursor res = db.rawQuery("SELECT * FROM " + DB_TABLE_NAME + " WHERE " +
+                DB_COLUMN_ID + "=?", new String[]{Integer.toString(id)});
         return res;
     }
+
     public Cursor getAllItems() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery( "SELECT * FROM " + DB_TABLE_NAME, null );
+        Cursor res = db.rawQuery("SELECT * FROM " + DB_TABLE_NAME, null);
         return res;
     }
+
     public Integer deleteItem(Integer id) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(DB_TABLE_NAME,
                 DB_COLUMN_ID + " = ? ",
-                new String[] { Integer.toString(id) });
+                new String[]{Integer.toString(id)});
     }
 
 }

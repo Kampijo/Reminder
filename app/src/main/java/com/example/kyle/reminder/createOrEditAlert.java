@@ -2,11 +2,12 @@ package com.example.kyle.reminder;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -57,7 +58,8 @@ public class createOrEditAlert extends AppCompatActivity {
         df = new SimpleDateFormat("hh:mm aa");
         df1 = new SimpleDateFormat("dd/MM/yy");
 
-        if(id > 0){
+        // If item exists, then set time and date list items to the time and date stored in alert
+        if (id > 0) {
             Cursor cursor = database.getItem(id);
             cursor.moveToFirst();
             String note = cursor.getString(cursor.getColumnIndex
@@ -77,8 +79,10 @@ public class createOrEditAlert extends AppCompatActivity {
 
             time = df.format(alertTime.getTime());
             date = df1.format(alertTime.getTime());
-        }
-        else {
+            cursor.close();
+
+            // Otherwise, set time and date list items to system time
+        } else {
             Calendar current = Calendar.getInstance();
 
             time = df.format(current.getTime());
@@ -109,11 +113,12 @@ public class createOrEditAlert extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if(i == 0){
+                //if first item in list (the time), then show timePickerDialog
+                if (i == 0) {
                     TimePickerDialog timePicker = timePicker();
                     timePicker.show();
-                }
-                else if(i == 1){
+                    //if second item in list (the date), then show datePicker dialog
+                } else if (i == 1) {
                     DatePickerDialog datePicker = datePicker();
                     datePicker.show();
                 }
@@ -122,27 +127,13 @@ public class createOrEditAlert extends AppCompatActivity {
         });
 
     }
-    public void onBackPressed(){
-        Intent intent = new Intent(this, MainActivity.class);
+
+    @Override
+    public void onBackPressed() {
+
         String note = editText.getText().toString();
-        editText.getText().clear();
-        if(id > 0){
-            database.updateAlert(id, note, hour, minute, day, month, year);
-            Intent cancelPrevious = new Intent(this, AlarmService.class);
-            cancelPrevious.putExtra("id", id);
-            cancelPrevious.setAction(AlarmService.CANCEL);
-            startService(cancelPrevious);
-        }
-        else {
-            id = (int) database.insertAlert(note, hour, minute, day, month, year);
-        }
-        Intent alarm = new Intent(this, AlarmService.class);
-        alarm.putExtra("id", id);
-        alarm.setAction(AlarmService.CREATE);
-        startService(alarm);
-        database.close();
-        startActivity(intent);
-        finish();
+        AlertDialog save = saveDialog(id, note, hour, minute, day, month, year);
+        save.show();
     }
 
     @Override
@@ -163,7 +154,7 @@ public class createOrEditAlert extends AppCompatActivity {
         return true;
     }
 
-    private TimePickerDialog timePicker(){
+    private TimePickerDialog timePicker() {
         TimePickerDialog timePickerDialog = new TimePickerDialog(createOrEditAlert.this,
                 new TimePickerDialog.OnTimeSetListener() {
                     @Override
@@ -177,25 +168,95 @@ public class createOrEditAlert extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                     }
                 }, hour, minute, false);
-       return timePickerDialog;
+        return timePickerDialog;
     }
-    private DatePickerDialog datePicker(){
+
+    private DatePickerDialog datePicker() {
         DatePickerDialog datePickerDialog = new DatePickerDialog(createOrEditAlert.this,
                 new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                createOrEditAlert.year = year;
-                createOrEditAlert.month = month;
-                createOrEditAlert.day = day;
-                alertTime.set(year, month, day, createOrEditAlert.hour, createOrEditAlert.minute);
-                date = df1.format(alertTime.getTime());
-                item2.put("subtext", date);
-                adapter.notifyDataSetChanged();
-            }
-        }, year, month, day);
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                        createOrEditAlert.year = year;
+                        createOrEditAlert.month = month;
+                        createOrEditAlert.day = day;
+                        alertTime.set(year, month, day, createOrEditAlert.hour,
+                                createOrEditAlert.minute);
+                        date = df1.format(alertTime.getTime());
+                        item2.put("subtext", date);
+                        adapter.notifyDataSetChanged();
+                    }
+                }, year, month, day);
         return datePickerDialog;
     }
 
+    private AlertDialog saveDialog(int id, String reminder, int hour, int minute, int day,
+                                   int month, int year) {
+        final int saveId = id;
+        final int saveHour = hour;
+        final int saveMinute = minute;
+        final int saveDay = day;
+        final int saveMonth = month;
+        final int saveYear = year;
+        final String saveMessage = reminder;
+
+
+        AlertDialog saveConfirm = new AlertDialog.Builder(this)
+
+                .setTitle("Confirm")
+                .setMessage("Do you want to save?")
+
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // if item exists, cancel previous alarm, update alert, then set new alarm
+                        if (saveId > 0) {
+
+                            Intent cancelPrevious = new Intent(createOrEditAlert.this,
+                                    AlarmService.class);
+                            cancelPrevious.putExtra("id", saveId);
+                            cancelPrevious.setAction(AlarmService.CANCEL);
+                            startService(cancelPrevious);
+                            database.updateAlert(saveId, saveMessage, saveHour, saveMinute, saveDay,
+                                    saveMonth, saveYear);
+                            createAlarm(saveId);
+
+                            // creates alarm for new alert
+                        } else {
+                            createAlarm((int) database.insertAlert(saveMessage, saveHour,
+                                    saveMinute, saveDay, saveMonth, saveYear));
+                        }
+                        startActivity(new Intent(createOrEditAlert.this, MainActivity.class));
+                        finish();
+                        dialog.dismiss();
+                    }
+
+                })
+
+
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(new Intent(createOrEditAlert.this, MainActivity.class));
+                        finish();
+                        database.close();
+                        editText.getText().clear();
+                        dialog.dismiss();
+
+                    }
+                })
+                .create();
+        return saveConfirm;
+
+    }
+
+    // creates an alarm
+    private void createAlarm(int id) {
+        Intent alarm = new Intent(this, AlarmService.class);
+        alarm.putExtra("id", id);
+        alarm.setAction(AlarmService.CREATE);
+        startService(alarm);
+        database.close();
+        editText.getText().clear();
+    }
 
 
 }

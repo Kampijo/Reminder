@@ -2,12 +2,12 @@ package com.example.kyle.reminder;
 
 import android.app.AlarmManager;
 import android.app.IntentService;
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.util.Calendar;
@@ -67,9 +67,15 @@ public class AlarmService extends IntentService {
             alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
 
         } else if (CANCEL.equals(action)) {
-            alarm.cancel(pendingIntent);
-        }
 
+            //if alarm is cancelled, then delete alert from database and send broadcast of completion
+
+            alarm.cancel(pendingIntent);
+            database.deleteItem(id);
+            Intent finishIntent = new Intent("FINISHED");
+            LocalBroadcastManager.getInstance(this).sendBroadcast(finishIntent);
+        }
+        database.close();
         cursor.close();
     }
 
