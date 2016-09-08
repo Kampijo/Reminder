@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         database = new reminderDatabase(this);
-        final Cursor cursor = database.getAllNotes();
+        final Cursor cursor = database.getAllItems();
         String[] columns = new String[]{
                 reminderDatabase.DB_COLUMN_CONTENT
         };
@@ -48,11 +49,21 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Cursor item = (Cursor) adapterView.getItemAtPosition(i);
                 int id = item.getInt(item.getColumnIndex(reminderDatabase.DB_COLUMN_ID));
-                String note = item.getString(item.getColumnIndex(reminderDatabase.DB_COLUMN_CONTENT));
-                Intent intent = new Intent(MainActivity.this, createOrEditNote.class);
-                intent.putExtra("noteID", id);
-                startActivity(intent);
-                finish();
+                String type = item.getString(item.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE));
+
+                if(type.equalsIgnoreCase("note")){
+                    Intent intent = new Intent(MainActivity.this, createOrEditNote.class);
+                    intent.putExtra("noteID", id);
+                    startActivity(intent);
+                    finish();
+                }
+                else{
+                    Intent intent = new Intent(MainActivity.this, createOrEditAlert.class);
+                    intent.putExtra("alertID", id);
+                    startActivity(intent);
+                    finish();
+                }
+
 
             }
         });
@@ -129,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requery(){
-        Cursor cursor = database.getAllNotes();
+        Cursor cursor = database.getAllItems();
         cursorAdapter.changeCursor(cursor);
     }
 }

@@ -24,7 +24,7 @@ public class createOrEditNote extends AppCompatActivity {
         id = intent.getIntExtra("noteID", 0);
         editText = (EditText) findViewById(R.id.editText);
         if(id > 0) {
-            Cursor cursor = database.getNote(id);
+            Cursor cursor = database.getItem(id);
             cursor.moveToFirst();
             String note = cursor.getString(cursor.getColumnIndex(database.DB_COLUMN_CONTENT));
             editText.setText(note, TextView.BufferType.EDITABLE);
@@ -44,6 +44,7 @@ public class createOrEditNote extends AppCompatActivity {
         else {
             database.insertNote(reminder);
         }
+        database.close();
         startActivity(new Intent(this, MainActivity.class));
         finish();
 

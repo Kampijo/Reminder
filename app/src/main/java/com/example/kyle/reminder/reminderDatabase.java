@@ -18,7 +18,10 @@ public class reminderDatabase extends SQLiteOpenHelper {
     public static final String DB_COLUMN_CONTENT = "content";
     public static final String DB_COLUMN_HOUR = "hour";
     public static final String DB_COLUMN_MINUTE = "minute";
-    public static final String DB_COLUMN_AM_PM = "am_pm";
+    public static final String DB_COLUMN_TYPE = "type";
+    public static final String DB_COLUMN_DAY = "day";
+    public static final String DB_COLUMN_MONTH = "month";
+    public static final String DB_COLUMN_YEAR = "year";
 
     public reminderDatabase(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -27,10 +30,13 @@ public class reminderDatabase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db){
         db.execSQL("CREATE TABLE " + DB_TABLE_NAME + "(" +
                 DB_COLUMN_ID + " INTEGER PRIMARY KEY, " +
+                DB_COLUMN_TYPE + " TEXT, " +
                 DB_COLUMN_CONTENT + " TEXT, " +
                 DB_COLUMN_HOUR + " INTEGER, " +
                 DB_COLUMN_MINUTE + " INTEGER, " +
-                DB_COLUMN_AM_PM + " INTEGER)"
+                DB_COLUMN_DAY + " INTEGER, " +
+                DB_COLUMN_MONTH + " INTEGER, " +
+                DB_COLUMN_YEAR + " INTEGER)"
         );
     }
     @Override
@@ -41,17 +47,21 @@ public class reminderDatabase extends SQLiteOpenHelper {
     public boolean insertNote(String note){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put(DB_COLUMN_TYPE, "note");
         values.put(DB_COLUMN_CONTENT, note);
         db.insert(DB_TABLE_NAME, null, values);
         return true;
     }
-    public boolean insertAlert(String note, int hour, int minute, int am_pm){
+    public boolean insertAlert(String note, int hour, int minute, int day, int month, int year){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put(DB_COLUMN_TYPE, "alert");
         values.put(DB_COLUMN_CONTENT, note);
         values.put(DB_COLUMN_HOUR, hour);
         values.put(DB_COLUMN_MINUTE, minute);
-        values.put(DB_COLUMN_AM_PM, am_pm);
+        values.put(DB_COLUMN_DAY, day);
+        values.put(DB_COLUMN_MONTH, month);
+        values.put(DB_COLUMN_YEAR, year);
         db.insert(DB_TABLE_NAME, null, values);
         return true;
     }
@@ -63,13 +73,27 @@ public class reminderDatabase extends SQLiteOpenHelper {
                 new String[] { Integer.toString(id) } );
         return true;
     }
-    public Cursor getNote(int id){
+    public boolean updateAlert(Integer id, String note, int hour, int minute, int day,
+                               int month, int year){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DB_COLUMN_CONTENT, note);
+        values.put(DB_COLUMN_HOUR, hour);
+        values.put(DB_COLUMN_MINUTE, minute);
+        values.put(DB_COLUMN_DAY, day);
+        values.put(DB_COLUMN_MONTH, month);
+        values.put(DB_COLUMN_YEAR, year);
+        db.update(DB_TABLE_NAME, values, DB_COLUMN_ID + " = ? ",
+                new String[] { Integer.toString(id) } );
+        return true;
+    }
+    public Cursor getItem(int id){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery( "SELECT * FROM " + DB_TABLE_NAME + " WHERE " +
                 DB_COLUMN_ID + "=?", new String[] { Integer.toString(id) } );
         return res;
     }
-    public Cursor getAllNotes() {
+    public Cursor getAllItems() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery( "SELECT * FROM " + DB_TABLE_NAME, null );
         return res;
@@ -80,6 +104,5 @@ public class reminderDatabase extends SQLiteOpenHelper {
                 DB_COLUMN_ID + " = ? ",
                 new String[] { Integer.toString(id) });
     }
-
 
 }
