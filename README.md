@@ -20,7 +20,7 @@ Alert feature, with working alarm notification has been implemented.
 
 # TO-DO
 Improve the UI.
-
+General QOL changes
 
 
 
