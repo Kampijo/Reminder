@@ -7,7 +7,7 @@ Both notes and alerts are displayed in the list of the main screen.
 
 When alert is set, notification with your message pops up once the alert time is reached.
 
-# History
+# Changelog
 ~~No save feature as of yet. Will get to it when I have the time.~~
 
 Save feature has been added.
