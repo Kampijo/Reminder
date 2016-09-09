@@ -19,8 +19,8 @@ Save feature has been added.
 Alert feature, with working alarm notification has been implemented.
 
 # TO-DO
-Improve the UI.
-General QOL changes
+Improve the UI <br/>
+General QOL changes (Sound picker, tap to see note on notification, etc)
 
 
 
