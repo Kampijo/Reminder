@@ -2,6 +2,7 @@ package com.example.kyle.reminder;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,11 +20,18 @@ public class AlarmReceiver extends BroadcastReceiver {
         int id = intent.getIntExtra("id", 0);
         String msg = intent.getStringExtra("msg");
 
+        Intent result = new Intent(context, createOrEditAlert.class);
+        result.putExtra("alertID", id);
+        PendingIntent clicked = PendingIntent.getActivity(context, 0, result,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
         Notification n = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_event_note_black_48dp)
                 .setContentTitle("Reminder")
                 .setContentText(msg)
+                .setContentIntent(clicked)
                 .build();
+
 
         n.defaults |= Notification.DEFAULT_VIBRATE;
         n.sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);

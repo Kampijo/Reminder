@@ -68,12 +68,9 @@ public class AlarmService extends IntentService {
 
         } else if (CANCEL.equals(action)) {
 
-            //if alarm is cancelled, then delete alert from database and send broadcast of completion
-
+            //cancel alarm
             alarm.cancel(pendingIntent);
-            database.deleteItem(id);
-            Intent finishIntent = new Intent("FINISHED");
-            LocalBroadcastManager.getInstance(this).sendBroadcast(finishIntent);
+
         }
         database.close();
         cursor.close();

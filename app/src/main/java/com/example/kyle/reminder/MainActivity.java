@@ -22,18 +22,12 @@ public class MainActivity extends AppCompatActivity {
 
     private reminderDatabase database;
     private SimpleCursorAdapter cursorAdapter;
-    private LocalBroadcastManager broadcastManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //broadcastManager to wait for AlarmService to finish
-        broadcastManager = LocalBroadcastManager.getInstance(this);
-        IntentFilter filter = new IntentFilter("FINISHED");
-        broadcastManager.registerReceiver(deleteReceiver, filter);
 
         // sets listView in mainActivity to contents of database
         database = new reminderDatabase(this);
@@ -162,15 +156,5 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = database.getAllItems();
         cursorAdapter.changeCursor(cursor);
     }
-
-    //receives signal of deletion of alarm from AlarmService and then refreshes UI
-    private BroadcastReceiver deleteReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals("FINISHED")) {
-                refresh();
-            }
-        }
-    };
 }
 

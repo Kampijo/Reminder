@@ -15,7 +15,7 @@
         android:id="@+id/editText"
         android:hint="Enter a reminder..."
         android:gravity="left"
-
+        android:background="@null"
         android:layout_alignWithParentIfMissing="false"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
