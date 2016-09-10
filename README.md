@@ -20,7 +20,7 @@ Alert feature, with working alarm notification has been implemented.
 
 # TO-DO
 Improve the UI <br/>
-General QOL changes (Sound picker, tap to see note on notification, etc)
+General QOL changes (Sound picker, ~~tap to see note on notification~~, etc)
 
 
 
