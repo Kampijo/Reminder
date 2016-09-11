@@ -131,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
                             cancel.putExtra("id", deleteId);
                             cancel.setAction(AlarmService.CANCEL);
                             startService(cancel);
+                            database.deleteItem(deleteId);
                         } else {
                             database.deleteItem(deleteId);
                         }
