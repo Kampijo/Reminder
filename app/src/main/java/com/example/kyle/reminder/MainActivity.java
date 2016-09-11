@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private reminderDatabase database;
     private SimpleCursorAdapter cursorAdapter;
+    private LocalBroadcastManager broadcastManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,11 @@ public class MainActivity extends AppCompatActivity {
         // sets listView in mainActivity to contents of database
         database = new reminderDatabase(this);
         final Cursor cursor = database.getAllItems();
+
+        //broadcastManager to wait for AlarmService to finish
+        broadcastManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter filter = new IntentFilter("FINISHED");
+        broadcastManager.registerReceiver(deleteReceiver, filter);
 
         String[] columns = new String[]{
                 reminderDatabase.DB_COLUMN_CONTENT
@@ -129,9 +135,9 @@ public class MainActivity extends AppCompatActivity {
                         if ((cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE)).equals("alert"))) {
                             Intent cancel = new Intent(MainActivity.this, AlarmService.class);
                             cancel.putExtra("id", deleteId);
+                            cancel.putExtra("delete", true);
                             cancel.setAction(AlarmService.CANCEL);
                             startService(cancel);
-                            database.deleteItem(deleteId);
                         } else {
                             database.deleteItem(deleteId);
                         }
@@ -157,5 +163,15 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = database.getAllItems();
         cursorAdapter.changeCursor(cursor);
     }
+
+    //receives signal of deletion of alarm from AlarmService and then refreshes UI
+    private BroadcastReceiver deleteReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals("FINISHED")) {
+                refresh();
+            }
+        }
+    };
 }
 

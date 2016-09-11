@@ -20,6 +20,7 @@ public class AlarmService extends IntentService {
     public static final String CREATE = "CREATE";
     public static final String CANCEL = "CANCEL";
     private reminderDatabase database;
+    private boolean delete;
 
     private IntentFilter matcher;
 
@@ -34,7 +35,7 @@ public class AlarmService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         String action = intent.getAction();
         int id = intent.getIntExtra("id", 0);
-
+        delete = intent.getBooleanExtra("delete", false);
         if (matcher.matchAction(action)) {
             Log.i("action", action);
             execute(action, id);
@@ -70,7 +71,9 @@ public class AlarmService extends IntentService {
 
             //cancel alarm
             alarm.cancel(pendingIntent);
-
+            database.deleteItem(id);
+            Intent finishIntent = new Intent("FINISHED");
+            LocalBroadcastManager.getInstance(this).sendBroadcast(finishIntent);
         }
         database.close();
         cursor.close();
