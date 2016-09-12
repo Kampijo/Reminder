@@ -43,10 +43,10 @@ public class MainActivity extends AppCompatActivity {
                 reminderDatabase.DB_COLUMN_CONTENT
         };
         int[] widgets = new int[]{
-                R.id.noteName
+                R.id.reminder
         };
 
-        cursorAdapter = new SimpleCursorAdapter(this, R.layout.note_layout,
+        cursorAdapter = new SimpleCursorAdapter(this, R.layout.list_item_layout,
                 cursor, columns, widgets, 0);
 
         ListView listView = (ListView) findViewById(R.id.listView);

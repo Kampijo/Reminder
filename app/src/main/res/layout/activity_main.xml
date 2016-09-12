@@ -16,7 +16,8 @@
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
         android:layout_alignParentLeft="true"
-        android:dividerHeight="4px"
+        android:dividerHeight="0px"
+        android:divider="@null"
         android:layout_alignParentStart="true" />
 
 </RelativeLayout>
