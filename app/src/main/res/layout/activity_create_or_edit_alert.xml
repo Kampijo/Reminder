@@ -10,26 +10,26 @@
     tools:context="com.example.kyle.reminder.createOrEditAlert">
 
     <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/alertTitle"
+        android:hint="Enter a title..."
+        android:gravity="start"
+        android:layout_gravity="top"
+        android:maxLength="42" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:layout_below="@id/alertTitle"
+        android:id="@+id/alertContent"
         android:inputType="textMultiLine"
-        android:ems="10"
-        android:gravity="left"
-        android:id="@+id/editText2"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:minHeight="150dp"
-        android:maxHeight="150dp" />
+        android:gravity="start"
+        android:hint="Enter a reminder..." />
 
     <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/listView2"
-        android:layout_below="@+id/editText2"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/alertSettings"
+        android:layout_below="@+id/alertContent" />
 
 </RelativeLayout>

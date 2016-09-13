@@ -12,7 +12,7 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/listView"
+        android:id="@+id/reminderList"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
         android:layout_alignParentLeft="true"

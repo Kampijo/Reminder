@@ -9,11 +9,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.TextView;
 
 
 public class createOrEditNote extends AppCompatActivity {
-    private EditText editText;
+    private EditText editText, editText2;
     private reminderDatabase database;
     private int id = 0;
 
@@ -24,12 +23,15 @@ public class createOrEditNote extends AppCompatActivity {
         database = new reminderDatabase(this);
         Intent intent = getIntent();
         id = intent.getIntExtra("noteID", 0);
-        editText = (EditText) findViewById(R.id.editText);
+        editText = (EditText) findViewById(R.id.noteContent);
+        editText2 = (EditText) findViewById(R.id.noteTitle);
         if (id > 0) {
             Cursor cursor = database.getItem(id);
             cursor.moveToFirst();
-            String note = cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_CONTENT));
-            editText.setText(note, TextView.BufferType.EDITABLE);
+            String content = cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_CONTENT));
+            String title = cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TITLE));
+            editText.setText(content);
+            editText2.setText(title);
         }
 
 
@@ -38,8 +40,9 @@ public class createOrEditNote extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        String reminder = editText.getText().toString();
-        AlertDialog save = saveDialog(id, reminder);
+        String content = editText.getText().toString();
+        String title = editText2.getText().toString();
+        AlertDialog save = saveDialog(id, title, content);
         save.show();
 
     }
@@ -72,9 +75,10 @@ public class createOrEditNote extends AppCompatActivity {
         return true;
     }
 
-    private AlertDialog saveDialog(int id, String reminder) {
+    private AlertDialog saveDialog(int id, String title, String content) {
         final int saveId = id;
-        final String saveMessage = reminder;
+        final String saveMessage = content;
+        final String saveTitle = title;
 
         AlertDialog saveConfirm = new AlertDialog.Builder(this)
 
@@ -86,9 +90,9 @@ public class createOrEditNote extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //if note exists, update. Otherwise insert new note.
                         if (saveId > 0) {
-                            database.updateNote(saveId, saveMessage);
+                            database.updateNote(saveId, saveTitle, saveMessage);
                         } else {
-                            database.insertNote(saveMessage);
+                            database.insertNote(saveTitle, saveMessage);
                         }
                         startActivity(new Intent(createOrEditNote.this, MainActivity.class));
                         finish();

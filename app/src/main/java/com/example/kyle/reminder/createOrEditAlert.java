@@ -30,7 +30,7 @@ public class createOrEditAlert extends AppCompatActivity {
 
     private SimpleAdapter adapter;
     private reminderDatabase database;
-    private EditText editText;
+    private EditText editText, editText2;
     private String time, date;
     private static int hour, minute, day, month, year;
     private int id;
@@ -49,7 +49,8 @@ public class createOrEditAlert extends AppCompatActivity {
         item2 = new HashMap<String, String>();
 
         database = new reminderDatabase(this);
-        editText = (EditText) findViewById(R.id.editText2);
+        editText = (EditText) findViewById(R.id.alertContent);
+        editText2 = (EditText) findViewById(R.id.alertTitle);
 
         intent = getIntent();
         id = intent.getIntExtra("alertID", 0);
@@ -62,9 +63,11 @@ public class createOrEditAlert extends AppCompatActivity {
         if (id > 0) {
             Cursor cursor = database.getItem(id);
             cursor.moveToFirst();
-            String note = cursor.getString(cursor.getColumnIndex
+            String content = cursor.getString(cursor.getColumnIndex
                     (reminderDatabase.DB_COLUMN_CONTENT));
-            editText.setText(note);
+            String title = cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TITLE));
+            editText.setText(content);
+            editText2.setText(title);
 
             hour = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_HOUR));
             minute = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_MINUTE));
@@ -107,7 +110,7 @@ public class createOrEditAlert extends AppCompatActivity {
         mapList.add(item2);
         adapter = new SimpleAdapter(this, mapList, android.R.layout.simple_list_item_2,
                 new String[]{"title", "subtext"}, new int[]{android.R.id.text1, android.R.id.text2});
-        ListView listView = (ListView) findViewById(R.id.listView2);
+        ListView listView = (ListView) findViewById(R.id.alertSettings);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -131,8 +134,9 @@ public class createOrEditAlert extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        String note = editText.getText().toString();
-        AlertDialog save = saveDialog(id, note, hour, minute, day, month, year);
+        String content = editText.getText().toString();
+        String title = editText2.getText().toString();
+        AlertDialog save = saveDialog(id, title, content, hour, minute, day, month, year);
         save.show();
     }
 
@@ -189,7 +193,7 @@ public class createOrEditAlert extends AppCompatActivity {
         return datePickerDialog;
     }
 
-    private AlertDialog saveDialog(int id, String reminder, int hour, int minute, int day,
+    private AlertDialog saveDialog(int id, String title, String content, int hour, int minute, int day,
                                    int month, int year) {
         final int saveId = id;
         final int saveHour = hour;
@@ -197,7 +201,8 @@ public class createOrEditAlert extends AppCompatActivity {
         final int saveDay = day;
         final int saveMonth = month;
         final int saveYear = year;
-        final String saveMessage = reminder;
+        final String saveMessage = content;
+        final String saveTitle = title;
 
 
         AlertDialog saveConfirm = new AlertDialog.Builder(this)
@@ -216,13 +221,13 @@ public class createOrEditAlert extends AppCompatActivity {
                             cancelPrevious.putExtra("id", saveId);
                             cancelPrevious.setAction(AlarmService.CANCEL);
                             startService(cancelPrevious);
-                            database.updateAlert(saveId, saveMessage, saveHour, saveMinute, saveDay,
+                            database.updateAlert(saveId, saveTitle, saveMessage, saveHour, saveMinute, saveDay,
                                     saveMonth, saveYear);
                             createAlarm(saveId);
 
                             // creates alarm for new alert
                         } else {
-                            createAlarm((int) database.insertAlert(saveMessage, saveHour,
+                            createAlarm((int) database.insertAlert(saveTitle, saveMessage, saveHour,
                                     saveMinute, saveDay, saveMonth, saveYear));
                         }
                         startActivity(new Intent(createOrEditAlert.this, MainActivity.class));

@@ -40,16 +40,18 @@ public class MainActivity extends AppCompatActivity {
         broadcastManager.registerReceiver(deleteReceiver, filter);
 
         String[] columns = new String[]{
+                reminderDatabase.DB_COLUMN_TITLE,
                 reminderDatabase.DB_COLUMN_CONTENT
         };
         int[] widgets = new int[]{
+                R.id.title,
                 R.id.reminder
         };
 
         cursorAdapter = new SimpleCursorAdapter(this, R.layout.list_item_layout,
                 cursor, columns, widgets, 0);
 
-        ListView listView = (ListView) findViewById(R.id.listView);
+        ListView listView = (ListView) findViewById(R.id.reminderList);
         listView.setAdapter(cursorAdapter);
         refresh();
 

@@ -50,6 +50,7 @@ public class AlarmService extends IntentService {
 
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra("id", cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_ID)));
+        intent.putExtra("title", cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TITLE)));
         intent.putExtra("msg", cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_CONTENT)));
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent,

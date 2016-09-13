@@ -11,10 +11,11 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class reminderDatabase extends SQLiteOpenHelper {
 
-    public static final String DATABASE_NAME = "noteData.db";
+    public static final String DATABASE_NAME = "reminderData.db";
     private static final int DATABASE_VERSION = 1;
-    public static final String DB_TABLE_NAME = "notes";
+    public static final String DB_TABLE_NAME = "reminders";
     public static final String DB_COLUMN_ID = "_id";
+    public static final String DB_COLUMN_TITLE = "title";
     public static final String DB_COLUMN_CONTENT = "content";
     public static final String DB_COLUMN_HOUR = "hour";
     public static final String DB_COLUMN_MINUTE = "minute";
@@ -32,6 +33,7 @@ public class reminderDatabase extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + DB_TABLE_NAME + "(" +
                 DB_COLUMN_ID + " INTEGER PRIMARY KEY, " +
                 DB_COLUMN_TYPE + " TEXT, " +
+                DB_COLUMN_TITLE + " TEXT, " +
                 DB_COLUMN_CONTENT + " TEXT, " +
                 DB_COLUMN_HOUR + " INTEGER, " +
                 DB_COLUMN_MINUTE + " INTEGER, " +
@@ -47,20 +49,22 @@ public class reminderDatabase extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertNote(String note) {
+    public boolean insertNote(String title, String content) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DB_COLUMN_TYPE, "note");
-        values.put(DB_COLUMN_CONTENT, note);
+        values.put(DB_COLUMN_TITLE, title);
+        values.put(DB_COLUMN_CONTENT, content);
         db.insert(DB_TABLE_NAME, null, values);
         return true;
     }
 
-    public long insertAlert(String note, int hour, int minute, int day, int month, int year) {
+    public long insertAlert(String title, String content, int hour, int minute, int day, int month, int year) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DB_COLUMN_TYPE, "alert");
-        values.put(DB_COLUMN_CONTENT, note);
+        values.put(DB_COLUMN_TITLE, title);
+        values.put(DB_COLUMN_CONTENT, content);
         values.put(DB_COLUMN_HOUR, hour);
         values.put(DB_COLUMN_MINUTE, minute);
         values.put(DB_COLUMN_DAY, day);
@@ -70,21 +74,23 @@ public class reminderDatabase extends SQLiteOpenHelper {
         return id;
     }
 
-    public boolean updateNote(Integer id, String note) {
+    public boolean updateNote(Integer id, String title, String note) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DB_COLUMN_CONTENT, note);
+        values.put(DB_COLUMN_TITLE, title);
         db.update(DB_TABLE_NAME, values, DB_COLUMN_ID + " = ? ",
                 new String[]{Integer.toString(id)});
         return true;
     }
 
-    public boolean updateAlert(Integer id, String note, int hour, int minute, int day,
+    public boolean updateAlert(Integer id, String title, String note, int hour, int minute, int day,
                                int month, int year) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DB_COLUMN_CONTENT, note);
         values.put(DB_COLUMN_HOUR, hour);
+        values.put(DB_COLUMN_TITLE, title);
         values.put(DB_COLUMN_MINUTE, minute);
         values.put(DB_COLUMN_DAY, day);
         values.put(DB_COLUMN_MONTH, month);
