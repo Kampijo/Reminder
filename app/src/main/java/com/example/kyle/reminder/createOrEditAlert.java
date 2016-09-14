@@ -36,6 +36,7 @@ public class createOrEditAlert extends AppCompatActivity {
     private int id;
     private Map<String, String> item1, item2;
     private DateFormat df, df1;
+    private Intent intent;
     private Calendar alertTime;
 
     @Override
@@ -51,7 +52,7 @@ public class createOrEditAlert extends AppCompatActivity {
         editText = (EditText) findViewById(R.id.alertContent);
         editText2 = (EditText) findViewById(R.id.alertTitle);
 
-        Intent intent = getIntent();
+        intent = getIntent();
         id = intent.getIntExtra("alertID", 0);
         alertTime = Calendar.getInstance();
 
@@ -178,8 +179,7 @@ public class createOrEditAlert extends AppCompatActivity {
                         item2.put("subtext", date);
                         adapter.notifyDataSetChanged();
                     }
-                }, alertTime.get(Calendar.YEAR), alertTime.get(Calendar.MONTH),
-                alertTime.get(Calendar.DAY_OF_MONTH));
+                }, alertTime.get(Calendar.YEAR), alertTime.get(Calendar.MONTH), alertTime.get(Calendar.DAY_OF_MONTH));
     }
 
     private AlertDialog saveDialog(int id, String title, String content, long time) {
