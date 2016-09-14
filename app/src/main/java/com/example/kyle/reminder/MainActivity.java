@@ -22,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
 
     private reminderDatabase database;
     private SimpleCursorAdapter cursorAdapter;
-    private LocalBroadcastManager broadcastManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         final Cursor cursor = database.getAllItems();
 
         //broadcastManager to wait for AlarmService to finish
-        broadcastManager = LocalBroadcastManager.getInstance(this);
+        LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
         IntentFilter filter = new IntentFilter("FINISHED");
         broadcastManager.registerReceiver(deleteReceiver, filter);
 

@@ -32,11 +32,10 @@ public class createOrEditAlert extends AppCompatActivity {
     private reminderDatabase database;
     private EditText editText, editText2;
     private String time, date;
-    private static int hour, minute, day, month, year;
+    private static long timeInMilliseconds;
     private int id;
     private Map<String, String> item1, item2;
     private DateFormat df, df1;
-    private Intent intent;
     private Calendar alertTime;
 
     @Override
@@ -52,7 +51,7 @@ public class createOrEditAlert extends AppCompatActivity {
         editText = (EditText) findViewById(R.id.alertContent);
         editText2 = (EditText) findViewById(R.id.alertTitle);
 
-        intent = getIntent();
+        Intent intent = getIntent();
         id = intent.getIntExtra("alertID", 0);
         alertTime = Calendar.getInstance();
 
@@ -69,14 +68,9 @@ public class createOrEditAlert extends AppCompatActivity {
             editText.setText(content);
             editText2.setText(title);
 
-            hour = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_HOUR));
-            minute = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_MINUTE));
+            timeInMilliseconds = cursor.getLong(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME));
 
-            day = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_DAY));
-            month = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_MONTH));
-            year = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_YEAR));
-
-            alertTime.set(year, month, day, hour, minute);
+            alertTime.setTimeInMillis(timeInMilliseconds);
             DateFormat df = new SimpleDateFormat("hh:mm aa");
             DateFormat df1 = new SimpleDateFormat("dd/MM/yy");
 
@@ -90,13 +84,8 @@ public class createOrEditAlert extends AppCompatActivity {
 
             time = df.format(current.getTime());
             date = df1.format(current.getTime());
-
-            hour = current.get(Calendar.HOUR_OF_DAY);
-            minute = current.get(Calendar.MINUTE);
-
-            day = current.get(Calendar.DAY_OF_MONTH);
-            month = current.get(Calendar.MONTH);
-            year = current.get(Calendar.YEAR);
+            timeInMilliseconds = current.getTimeInMillis();
+            alertTime.setTimeInMillis(timeInMilliseconds);
 
         }
 
@@ -136,11 +125,10 @@ public class createOrEditAlert extends AppCompatActivity {
 
         String content = editText.getText().toString();
         String title = editText2.getText().toString();
-        if(!(alertTime.getTimeInMillis() < Calendar.getInstance().getTimeInMillis())) {
-            AlertDialog save = saveDialog(id, title, content, hour, minute, day, month, year);
+        if (!(alertTime.getTimeInMillis() < Calendar.getInstance().getTimeInMillis())) {
+            AlertDialog save = saveDialog(id, title, content, timeInMilliseconds);
             save.show();
-        }
-        else{
+        } else {
             AlertDialog error = errorDialog();
             error.show();
         }
@@ -169,15 +157,13 @@ public class createOrEditAlert extends AppCompatActivity {
                 new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                        createOrEditAlert.hour = hour;
-                        createOrEditAlert.minute = minute;
-                        alertTime.set(createOrEditAlert.year, createOrEditAlert.month,
-                                createOrEditAlert.day, hour, minute);
+                        alertTime.set(Calendar.HOUR_OF_DAY, hour);
+                        alertTime.set(Calendar.MINUTE, minute);
                         time = df.format(alertTime.getTime());
                         item1.put("subtext", time);
                         adapter.notifyDataSetChanged();
                     }
-                }, hour, minute, false);
+                }, alertTime.get(Calendar.HOUR_OF_DAY), alertTime.get(Calendar.MINUTE), false);
     }
 
     private DatePickerDialog datePicker() {
@@ -185,26 +171,20 @@ public class createOrEditAlert extends AppCompatActivity {
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        createOrEditAlert.year = year;
-                        createOrEditAlert.month = month;
-                        createOrEditAlert.day = day;
-                        alertTime.set(year, month, day, createOrEditAlert.hour,
-                                createOrEditAlert.minute);
+                        alertTime.set(Calendar.YEAR, year);
+                        alertTime.set(Calendar.MONTH, month);
+                        alertTime.set(Calendar.DAY_OF_MONTH, day);
                         date = df1.format(alertTime.getTime());
                         item2.put("subtext", date);
                         adapter.notifyDataSetChanged();
                     }
-                }, year, month, day);
+                }, alertTime.get(Calendar.YEAR), alertTime.get(Calendar.MONTH),
+                alertTime.get(Calendar.DAY_OF_MONTH));
     }
 
-    private AlertDialog saveDialog(int id, String title, String content, int hour, int minute, int day,
-                                   int month, int year) {
+    private AlertDialog saveDialog(int id, String title, String content, long time) {
         final int saveId = id;
-        final int saveHour = hour;
-        final int saveMinute = minute;
-        final int saveDay = day;
-        final int saveMonth = month;
-        final int saveYear = year;
+        final long saveTime = time;
         final String saveMessage = content;
         final String saveTitle = title;
 
@@ -225,14 +205,12 @@ public class createOrEditAlert extends AppCompatActivity {
                             cancelPrevious.putExtra("id", saveId);
                             cancelPrevious.setAction(AlarmService.CANCEL);
                             startService(cancelPrevious);
-                            database.updateAlert(saveId, saveTitle, saveMessage, saveHour, saveMinute, saveDay,
-                                    saveMonth, saveYear);
+                            database.updateAlert(saveId, saveTitle, saveMessage, saveTime);
                             createAlarm(saveId);
 
                             // creates alarm for new alert
                         } else {
-                            createAlarm((int) database.insertAlert(saveTitle, saveMessage, saveHour,
-                                    saveMinute, saveDay, saveMonth, saveYear));
+                            createAlarm((int) database.insertAlert(saveTitle, saveMessage, saveTime));
                         }
                         startActivity(new Intent(createOrEditAlert.this, MainActivity.class));
                         finish();
@@ -256,7 +234,7 @@ public class createOrEditAlert extends AppCompatActivity {
 
     }
 
-    private AlertDialog errorDialog(){
+    private AlertDialog errorDialog() {
 
         return new AlertDialog.Builder(this)
                 .setMessage("There is no such thing as time travel.")

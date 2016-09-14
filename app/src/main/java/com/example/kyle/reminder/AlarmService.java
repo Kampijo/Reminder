@@ -10,17 +10,15 @@ import android.database.Cursor;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import java.util.Calendar;
-
 /**
  * Created by kyle on 07/09/16.
+ *
+ * Service used to create alarms.
  */
 public class AlarmService extends IntentService {
 
     public static final String CREATE = "CREATE";
     public static final String CANCEL = "CANCEL";
-    private reminderDatabase database;
-
     private IntentFilter matcher;
 
     public AlarmService() {
@@ -43,7 +41,7 @@ public class AlarmService extends IntentService {
 
     private void execute(String action, int id) {
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        database = new reminderDatabase(this);
+        reminderDatabase database = new reminderDatabase(this);
         Cursor cursor = database.getItem(id);
         cursor.moveToFirst();
 
@@ -55,17 +53,10 @@ public class AlarmService extends IntentService {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        int year = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_YEAR));
-        int day = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_DAY));
-        int month = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_MONTH));
-        int hour = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_HOUR));
-        int minute = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_MINUTE));
+        long timeInMilliseconds = cursor.getLong(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME));
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month, day, hour, minute, 0);
-        Log.i("time", calendar.getTime().toString());
         if (CREATE.equals(action)) {
-            alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            alarm.set(AlarmManager.RTC_WAKEUP, timeInMilliseconds, pendingIntent);
 
         } else if (CANCEL.equals(action)) {
             //cancel alarm
