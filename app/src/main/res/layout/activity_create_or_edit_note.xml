@@ -23,6 +23,5 @@
         android:layout_height="match_parent"
         android:id="@+id/noteContent"
         android:hint="@string/reminderHint"
-        android:gravity="start"
-        android:background="@null"/>
+        android:gravity="start" />
 </RelativeLayout>

@@ -136,8 +136,14 @@ public class createOrEditAlert extends AppCompatActivity {
 
         String content = editText.getText().toString();
         String title = editText2.getText().toString();
-        AlertDialog save = saveDialog(id, title, content, hour, minute, day, month, year);
-        save.show();
+        if(!(alertTime.getTimeInMillis() < Calendar.getInstance().getTimeInMillis())) {
+            AlertDialog save = saveDialog(id, title, content, hour, minute, day, month, year);
+            save.show();
+        }
+        else{
+            AlertDialog error = errorDialog();
+            error.show();
+        }
     }
 
     @Override
@@ -210,7 +216,7 @@ public class createOrEditAlert extends AppCompatActivity {
 
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
-                    public void onClick(DialogInterface dialog, int whichButton) {
+                    public void onClick(DialogInterface dialog, int i) {
                         // if item exists, cancel previous alarm, update alert, then set new alarm
                         if (saveId > 0) {
 
@@ -237,7 +243,7 @@ public class createOrEditAlert extends AppCompatActivity {
 
 
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(DialogInterface dialog, int i) {
                         startActivity(new Intent(createOrEditAlert.this, MainActivity.class));
                         finish();
                         database.close();
@@ -248,6 +254,20 @@ public class createOrEditAlert extends AppCompatActivity {
                 })
                 .create();
 
+    }
+
+    private AlertDialog errorDialog(){
+
+        return new AlertDialog.Builder(this)
+                .setMessage("There is no such thing as time travel.")
+                .setTitle("Error")
+                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
     }
 
     // creates an alarm
