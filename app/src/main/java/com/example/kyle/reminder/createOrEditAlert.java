@@ -159,7 +159,7 @@ public class createOrEditAlert extends AppCompatActivity {
     }
 
     private TimePickerDialog timePicker() {
-        TimePickerDialog timePickerDialog = new TimePickerDialog(createOrEditAlert.this,
+        return new TimePickerDialog(createOrEditAlert.this,
                 new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int hour, int minute) {
@@ -172,11 +172,10 @@ public class createOrEditAlert extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                     }
                 }, hour, minute, false);
-        return timePickerDialog;
     }
 
     private DatePickerDialog datePicker() {
-        DatePickerDialog datePickerDialog = new DatePickerDialog(createOrEditAlert.this,
+        return new DatePickerDialog(createOrEditAlert.this,
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
@@ -190,7 +189,6 @@ public class createOrEditAlert extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                     }
                 }, year, month, day);
-        return datePickerDialog;
     }
 
     private AlertDialog saveDialog(int id, String title, String content, int hour, int minute, int day,
@@ -205,7 +203,7 @@ public class createOrEditAlert extends AppCompatActivity {
         final String saveTitle = title;
 
 
-        AlertDialog saveConfirm = new AlertDialog.Builder(this)
+        return new AlertDialog.Builder(this)
 
                 .setTitle("Confirm")
                 .setMessage("Do you want to save?")
@@ -249,7 +247,6 @@ public class createOrEditAlert extends AppCompatActivity {
                     }
                 })
                 .create();
-        return saveConfirm;
 
     }
 

@@ -13,16 +13,16 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:id="@+id/noteTitle"
-        android:hint="Enter a title..."
+        android:hint="@string/titleHint"
         android:gravity="start"
         android:layout_gravity="top"
-        android:maxLength="42" />
+        android:maxLength="35" />
     <EditText
         android:layout_width="match_parent"
         android:layout_below="@id/noteTitle"
         android:layout_height="match_parent"
         android:id="@+id/noteContent"
-        android:hint="Enter a reminder..."
+        android:hint="@string/reminderHint"
         android:gravity="start"
-        />
+        android:background="@null"/>
 </RelativeLayout>

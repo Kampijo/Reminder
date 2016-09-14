@@ -13,10 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:id="@+id/alertTitle"
-        android:hint="Enter a title..."
+        android:hint="@string/titleHint"
         android:gravity="start"
         android:layout_gravity="top"
-        android:maxLength="42" />
+        android:maxLength="35" />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="170dp"
@@ -24,7 +24,7 @@
         android:id="@+id/alertContent"
         android:inputType="textMultiLine"
         android:gravity="start"
-        android:hint="Enter a reminder..." />
+        android:hint="@string/reminderHint" />
 
     <ListView
         android:layout_width="match_parent"

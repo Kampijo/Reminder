@@ -80,7 +80,7 @@ public class createOrEditNote extends AppCompatActivity {
         final String saveMessage = content;
         final String saveTitle = title;
 
-        AlertDialog saveConfirm = new AlertDialog.Builder(this)
+        return new AlertDialog.Builder(this)
 
                 .setTitle("Confirm")
                 .setMessage("Do you want to save?")
@@ -115,8 +115,6 @@ public class createOrEditNote extends AppCompatActivity {
                     }
                 })
                 .create();
-        return saveConfirm;
 
     }
-
 }

@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         final int deleteId = id;
         final Cursor cursor = database.getItem(id);
         cursor.moveToFirst();
-        AlertDialog deleteConfirm = new AlertDialog.Builder(this)
+        return new AlertDialog.Builder(this)
                 .setTitle("Confirm")
                 .setMessage("Do you want to delete?")
 
@@ -157,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .create();
-        return deleteConfirm;
 
     }
 

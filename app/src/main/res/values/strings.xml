@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Reminder</string>
+    <string name="titleHint">Enter a title...</string>
+    <string name="reminderHint">Enter a reminder...</string>
 </resources>
