@@ -213,7 +213,6 @@ public class createOrEditAlert extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int i) {
                         // if item exists, cancel previous alarm, update alert, then set new alarm
                         if (saveId > 0) {
-
                             Intent cancelPrevious = new Intent(createOrEditAlert.this,
                                     AlarmService.class);
                             cancelPrevious.putExtra("id", saveId);
@@ -257,7 +256,7 @@ public class createOrEditAlert extends AppCompatActivity {
                         if (deleteId > 0) {
                             Intent cancel = new Intent(createOrEditAlert.this, AlarmService.class);
                             cancel.putExtra("id", deleteId);
-                            cancel.setAction(AlarmService.CANCEL);
+                            cancel.setAction(AlarmService.DELETE);
                             startService(cancel);
                         } else {
                             terminateActivity();

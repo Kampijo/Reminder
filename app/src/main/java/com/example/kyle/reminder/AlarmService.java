@@ -18,6 +18,7 @@ public class AlarmService extends IntentService {
 
     public static final String CREATE = "CREATE";
     public static final String CANCEL = "CANCEL";
+    public static final String DELETE = "DELETE";
     private IntentFilter matcher;
 
     public AlarmService() {
@@ -25,6 +26,7 @@ public class AlarmService extends IntentService {
         matcher = new IntentFilter();
         matcher.addAction(CREATE);
         matcher.addAction(CANCEL);
+        matcher.addAction(DELETE);
     }
 
     @Override
@@ -32,12 +34,14 @@ public class AlarmService extends IntentService {
         String action = intent.getAction();
         int id = intent.getIntExtra("id", 0);
         boolean deleteFromMain = intent.getBooleanExtra("deleteFromMain", false);
+
         if (matcher.matchAction(action)) {
             execute(action, id, deleteFromMain);
         }
     }
 
     private void execute(String action, int id, boolean deleteFromMain) {
+
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         reminderDatabase database = new reminderDatabase(this);
         Cursor cursor = database.getItem(id);
@@ -56,7 +60,7 @@ public class AlarmService extends IntentService {
         if (CREATE.equals(action)) {
             alarm.set(AlarmManager.RTC_WAKEUP, timeInMilliseconds, pendingIntent);
 
-        } else if (CANCEL.equals(action)) {
+        } else if (DELETE.equals(action)) {
 
             alarm.cancel(pendingIntent);
             database.deleteItem(id);
@@ -65,6 +69,8 @@ public class AlarmService extends IntentService {
             } else {
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("FINISHED"));
             }
+        } else if (CANCEL.equals(action)) {
+            alarm.cancel(pendingIntent);
         }
         database.close();
         cursor.close();
