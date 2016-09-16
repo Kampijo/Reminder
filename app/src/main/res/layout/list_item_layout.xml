@@ -23,8 +23,7 @@
             android:paddingRight="12dp"
             android:paddingTop="12dp"
             android:textSize="18dp"
-            android:textStyle="bold"
-            />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/reminder"

@@ -2,10 +2,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_del_alert"
+        android:icon="@drawable/ic_delete_white_48dp"
+        android:title="@string/delete"
+        app:showAsAction="always"   />
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         app:showAsAction="never"
-        android:title="Settings">
+        android:title="@string/settings">
     </item>
 
 </menu>

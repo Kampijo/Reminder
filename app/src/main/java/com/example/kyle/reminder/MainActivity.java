@@ -22,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
 
     private reminderDatabase database;
     private SimpleCursorAdapter cursorAdapter;
-    private LocalBroadcastManager broadcastManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         final Cursor cursor = database.getAllItems();
 
         //broadcastManager to wait for AlarmService to finish
-        broadcastManager = LocalBroadcastManager.getInstance(this);
+        LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
         IntentFilter filter = new IntentFilter("FINISHED");
         broadcastManager.registerReceiver(deleteReceiver, filter);
 
@@ -85,8 +84,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Cursor item = (Cursor) adapterView.getItemAtPosition(i);
                 int id = item.getInt(item.getColumnIndex(reminderDatabase.DB_COLUMN_ID));
-                AlertDialog confirm = deleteDialog(id);
-                confirm.show();
+                deleteDialog(id).show();
                 return true;
             }
         });
@@ -104,13 +102,11 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_note:
-                Intent intent0 = new Intent(this, createOrEditNote.class);
-                startActivity(intent0);
+                startActivity(new Intent(this, createOrEditNote.class));
                 finish();
                 break;
             case R.id.action_add_alert:
-                Intent intent1 = new Intent(this, createOrEditAlert.class);
-                startActivity(intent1);
+                startActivity(new Intent(this, createOrEditAlert.class));
                 finish();
                 break;
             case R.id.action_settings:
@@ -132,12 +128,12 @@ public class MainActivity extends AppCompatActivity {
 
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
-                    public void onClick(DialogInterface dialog, int whichButton) {
+                    public void onClick(DialogInterface dialog, int i) {
                         //if the selected item for deletion is an alert, cancel the alarm
                         if ((cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE)).equals("alert"))) {
                             Intent cancel = new Intent(MainActivity.this, AlarmService.class);
                             cancel.putExtra("id", deleteId);
-                            cancel.putExtra("delete", true);
+                            cancel.putExtra("deleteFromMain", true);
                             cancel.setAction(AlarmService.CANCEL);
                             startService(cancel);
                         } else {
@@ -148,10 +144,8 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 })
-
-
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(DialogInterface dialog, int i) {
                         dialog.dismiss();
 
                     }

@@ -7,16 +7,16 @@ import android.database.Cursor;
 
 /**
  * Created by kyle on 07/09/16.
+ * <p/>
+ * Gets alarms from reminderDatabase and sets alarms on reboot
  */
 
 public class AlarmSetter extends BroadcastReceiver {
 
-    private reminderDatabase database;
-
     @Override
     // once phone reboot complete, set back all alarms
     public void onReceive(Context context, Intent intent) {
-        database = new reminderDatabase(context);
+        reminderDatabase database = new reminderDatabase(context);
         Cursor cursor = database.getAllItems();
         try {
             while (cursor.moveToNext()) {

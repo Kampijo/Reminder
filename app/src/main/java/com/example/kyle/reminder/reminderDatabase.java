@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 /**
  * Created by kyle on 05/09/16.
+ * <p/>
+ * SQLite database for storing notes/alerts
  */
 public class reminderDatabase extends SQLiteOpenHelper {
 
@@ -15,14 +17,10 @@ public class reminderDatabase extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     public static final String DB_TABLE_NAME = "reminders";
     public static final String DB_COLUMN_ID = "_id";
+    public static final String DB_COLUMN_TYPE = "type";
     public static final String DB_COLUMN_TITLE = "title";
     public static final String DB_COLUMN_CONTENT = "content";
-    public static final String DB_COLUMN_HOUR = "hour";
-    public static final String DB_COLUMN_MINUTE = "minute";
-    public static final String DB_COLUMN_TYPE = "type";
-    public static final String DB_COLUMN_DAY = "day";
-    public static final String DB_COLUMN_MONTH = "month";
-    public static final String DB_COLUMN_YEAR = "year";
+    public static final String DB_COLUMN_TIME = "time";
 
     public reminderDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -35,11 +33,7 @@ public class reminderDatabase extends SQLiteOpenHelper {
                 DB_COLUMN_TYPE + " TEXT, " +
                 DB_COLUMN_TITLE + " TEXT, " +
                 DB_COLUMN_CONTENT + " TEXT, " +
-                DB_COLUMN_HOUR + " INTEGER, " +
-                DB_COLUMN_MINUTE + " INTEGER, " +
-                DB_COLUMN_DAY + " INTEGER, " +
-                DB_COLUMN_MONTH + " INTEGER, " +
-                DB_COLUMN_YEAR + " INTEGER)"
+                DB_COLUMN_TIME + " LONG)"
         );
     }
 
@@ -59,19 +53,14 @@ public class reminderDatabase extends SQLiteOpenHelper {
         return true;
     }
 
-    public long insertAlert(String title, String content, int hour, int minute, int day, int month, int year) {
+    public long insertAlert(String title, String content, long time) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DB_COLUMN_TYPE, "alert");
         values.put(DB_COLUMN_TITLE, title);
         values.put(DB_COLUMN_CONTENT, content);
-        values.put(DB_COLUMN_HOUR, hour);
-        values.put(DB_COLUMN_MINUTE, minute);
-        values.put(DB_COLUMN_DAY, day);
-        values.put(DB_COLUMN_MONTH, month);
-        values.put(DB_COLUMN_YEAR, year);
-        long id = db.insert(DB_TABLE_NAME, null, values);
-        return id;
+        values.put(DB_COLUMN_TIME, time);
+        return db.insert(DB_TABLE_NAME, null, values);
     }
 
     public boolean updateNote(Integer id, String title, String note) {
@@ -84,17 +73,12 @@ public class reminderDatabase extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean updateAlert(Integer id, String title, String note, int hour, int minute, int day,
-                               int month, int year) {
+    public boolean updateAlert(Integer id, String title, String note, long time) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DB_COLUMN_CONTENT, note);
-        values.put(DB_COLUMN_HOUR, hour);
         values.put(DB_COLUMN_TITLE, title);
-        values.put(DB_COLUMN_MINUTE, minute);
-        values.put(DB_COLUMN_DAY, day);
-        values.put(DB_COLUMN_MONTH, month);
-        values.put(DB_COLUMN_YEAR, year);
+        values.put(DB_COLUMN_TIME, time);
         db.update(DB_TABLE_NAME, values, DB_COLUMN_ID + " = ? ",
                 new String[]{Integer.toString(id)});
         return true;
@@ -102,15 +86,13 @@ public class reminderDatabase extends SQLiteOpenHelper {
 
     public Cursor getItem(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("SELECT * FROM " + DB_TABLE_NAME + " WHERE " +
+        return db.rawQuery("SELECT * FROM " + DB_TABLE_NAME + " WHERE " +
                 DB_COLUMN_ID + "=?", new String[]{Integer.toString(id)});
-        return res;
     }
 
     public Cursor getAllItems() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("SELECT * FROM " + DB_TABLE_NAME, null);
-        return res;
+        return db.rawQuery("SELECT * FROM " + DB_TABLE_NAME, null);
     }
 
     public Integer deleteItem(Integer id) {

@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">Reminder</string>
-    <string name="titleHint">Enter a title...</string>
+    <string name="titleHint">Title</string>
     <string name="reminderHint">Enter a reminder...</string>
+    <string name="addNote">Add Note</string>
+    <string name="addAlert">Add Alert</string>
+    <string name="delete">Delete</string>
+    <string name="settings">Settings</string>
 </resources>
