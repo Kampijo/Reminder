@@ -18,13 +18,17 @@ public class createOrEditNote extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_or_edit_note);
         database = new reminderDatabase(this);
+
         Intent intent = getIntent();
         id = intent.getIntExtra("noteID", 0);
+
         editText = (EditText) findViewById(R.id.noteContent);
         editText2 = (EditText) findViewById(R.id.noteTitle);
+
         if (id > 0) {
             Cursor cursor = database.getItem(id);
             cursor.moveToFirst();
@@ -34,7 +38,7 @@ public class createOrEditNote extends AppCompatActivity {
             editText2.setText(title);
         }
 
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -42,8 +46,7 @@ public class createOrEditNote extends AppCompatActivity {
 
         String content = editText.getText().toString();
         String title = editText2.getText().toString();
-        AlertDialog save = saveDialog(id, title, content);
-        save.show();
+        saveDialog(id, title, content).show();
 
     }
 
@@ -57,22 +60,43 @@ public class createOrEditNote extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_del_note:
-                //if item exists, delete and go back to MainActivity. Otherwise, just go back.
-                if (id > 0) {
-                    database.deleteItem(id);
-                    startActivity(new Intent(this, MainActivity.class));
-                    finish();
-                } else {
-                    startActivity(new Intent(this, MainActivity.class));
-                    finish();
-                }
+                deleteDialog(id).show();
             case R.id.action_settings:
                 break;
+            case android.R.id.home:
+                terminateActivity();
             default:
                 break;
         }
 
         return true;
+    }
+
+    private AlertDialog deleteDialog(int id) {
+
+        final int deleteId = id;
+
+        return new AlertDialog.Builder(this)
+                .setTitle("Confirm")
+                .setMessage("Do you want to delete?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int i) {
+                        if (deleteId > 0) {
+                            database.deleteItem(deleteId);
+                        }
+                        terminateActivity();
+                    }
+
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int i) {
+                        dialog.dismiss();
+
+                    }
+                })
+                .create();
+
     }
 
     private AlertDialog saveDialog(int id, String title, String content) {
@@ -84,7 +108,6 @@ public class createOrEditNote extends AppCompatActivity {
 
                 .setTitle("Confirm")
                 .setMessage("Do you want to save?")
-
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -94,20 +117,16 @@ public class createOrEditNote extends AppCompatActivity {
                         } else {
                             database.insertNote(saveTitle, saveMessage);
                         }
-                        startActivity(new Intent(createOrEditNote.this, MainActivity.class));
-                        finish();
+                        terminateActivity();
                         database.close();
                         editText.getText().clear();
                         dialog.dismiss();
                     }
 
                 })
-
-
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        startActivity(new Intent(createOrEditNote.this, MainActivity.class));
-                        finish();
+                        terminateActivity();
                         database.close();
                         editText.getText().clear();
                         dialog.dismiss();
@@ -115,6 +134,12 @@ public class createOrEditNote extends AppCompatActivity {
                     }
                 })
                 .create();
-
     }
+
+    private void terminateActivity() {
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
+    }
+
+
 }

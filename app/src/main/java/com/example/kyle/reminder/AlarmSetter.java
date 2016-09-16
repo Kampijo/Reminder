@@ -7,7 +7,7 @@ import android.database.Cursor;
 
 /**
  * Created by kyle on 07/09/16.
- *
+ * <p/>
  * Gets alarms from reminderDatabase and sets alarms on reboot
  */
 

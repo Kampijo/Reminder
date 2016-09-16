@@ -8,11 +8,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 /**
  * Created by kyle on 07/09/16.
- *
+ * <p/>
  * Service used to create alarms.
  */
 public class AlarmService extends IntentService {
@@ -32,14 +31,13 @@ public class AlarmService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         String action = intent.getAction();
         int id = intent.getIntExtra("id", 0);
-
+        boolean deleteFromMain = intent.getBooleanExtra("deleteFromMain", false);
         if (matcher.matchAction(action)) {
-            Log.i("action", action);
-            execute(action, id);
+            execute(action, id, deleteFromMain);
         }
     }
 
-    private void execute(String action, int id) {
+    private void execute(String action, int id, boolean deleteFromMain) {
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         reminderDatabase database = new reminderDatabase(this);
         Cursor cursor = database.getItem(id);
@@ -59,11 +57,14 @@ public class AlarmService extends IntentService {
             alarm.set(AlarmManager.RTC_WAKEUP, timeInMilliseconds, pendingIntent);
 
         } else if (CANCEL.equals(action)) {
-            //cancel alarm
+
             alarm.cancel(pendingIntent);
             database.deleteItem(id);
-            Intent finishIntent = new Intent("FINISHED");
-            LocalBroadcastManager.getInstance(this).sendBroadcast(finishIntent);
+            if (!deleteFromMain) {
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("DELETED"));
+            } else {
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("FINISHED"));
+            }
         }
         database.close();
         cursor.close();

@@ -2,12 +2,17 @@ package com.example.kyle.reminder;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +37,6 @@ public class createOrEditAlert extends AppCompatActivity {
     private reminderDatabase database;
     private EditText editText, editText2;
     private String time, date;
-    private static long timeInMilliseconds;
     private int id;
     private Map<String, String> item1, item2;
     private DateFormat df, df1;
@@ -43,6 +47,10 @@ public class createOrEditAlert extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_or_edit_alert);
+
+        LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter filter = new IntentFilter("DELETED");
+        broadcastManager.registerReceiver(deleteReceiver, filter);
 
         List<Map<String, String>> mapList = new ArrayList<Map<String, String>>();
         item1 = new HashMap<String, String>();
@@ -69,7 +77,7 @@ public class createOrEditAlert extends AppCompatActivity {
             editText.setText(content);
             editText2.setText(title);
 
-            timeInMilliseconds = cursor.getLong(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME));
+            long timeInMilliseconds = cursor.getLong(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME));
 
             alertTime.setTimeInMillis(timeInMilliseconds);
             DateFormat df = new SimpleDateFormat("hh:mm aa");
@@ -82,11 +90,9 @@ public class createOrEditAlert extends AppCompatActivity {
             // Otherwise, set time and date list items to system time
         } else {
             Calendar current = Calendar.getInstance();
-
             time = df.format(current.getTime());
             date = df1.format(current.getTime());
-            timeInMilliseconds = current.getTimeInMillis();
-            alertTime.setTimeInMillis(timeInMilliseconds);
+            alertTime.setTimeInMillis(current.getTimeInMillis());
 
         }
 
@@ -119,6 +125,8 @@ public class createOrEditAlert extends AppCompatActivity {
             }
         });
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
     }
 
     @Override
@@ -127,11 +135,10 @@ public class createOrEditAlert extends AppCompatActivity {
         String content = editText.getText().toString();
         String title = editText2.getText().toString();
         if (!(alertTime.getTimeInMillis() < Calendar.getInstance().getTimeInMillis())) {
-            AlertDialog save = saveDialog(id, title, content, timeInMilliseconds);
-            save.show();
+            saveDialog(id, title, content, alertTime.getTimeInMillis()).show();
+
         } else {
-            AlertDialog error = errorDialog();
-            error.show();
+            errorDialog().show();
         }
     }
 
@@ -144,10 +151,17 @@ public class createOrEditAlert extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_del_alert:
+                deleteDialog(id).show();
+
             case R.id.action_settings:
                 break;
+
+            case android.R.id.home:
+                terminateActivity();
             default:
                 break;
+
         }
 
         return true;
@@ -212,8 +226,7 @@ public class createOrEditAlert extends AppCompatActivity {
                         } else {
                             createAlarm((int) database.insertAlert(saveTitle, saveMessage, saveTime));
                         }
-                        startActivity(new Intent(createOrEditAlert.this, MainActivity.class));
-                        finish();
+                        terminateActivity();
                         dialog.dismiss();
                     }
 
@@ -222,12 +235,39 @@ public class createOrEditAlert extends AppCompatActivity {
 
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int i) {
-                        startActivity(new Intent(createOrEditAlert.this, MainActivity.class));
-                        finish();
+                        terminateActivity();
                         database.close();
                         editText.getText().clear();
                         dialog.dismiss();
 
+                    }
+                })
+                .create();
+    }
+
+    private AlertDialog deleteDialog(int id) {
+
+        final int deleteId = id;
+        Log.i("id", "" + deleteId);
+        return new AlertDialog.Builder(this)
+                .setTitle("Confirm")
+                .setMessage("Do you want to delete?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int i) {
+                        if (deleteId > 0) {
+                            Intent cancel = new Intent(createOrEditAlert.this, AlarmService.class);
+                            cancel.putExtra("id", deleteId);
+                            cancel.setAction(AlarmService.CANCEL);
+                            startService(cancel);
+                        } else {
+                            terminateActivity();
+                        }
+                    }
+
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int i) {
+                        dialog.dismiss();
                     }
                 })
                 .create();
@@ -239,7 +279,7 @@ public class createOrEditAlert extends AppCompatActivity {
         return new AlertDialog.Builder(this)
                 .setMessage("There is no such thing as time travel.")
                 .setTitle("Error")
-                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
                         dialog.dismiss();
@@ -257,6 +297,20 @@ public class createOrEditAlert extends AppCompatActivity {
         database.close();
         editText.getText().clear();
     }
+
+    private void terminateActivity() {
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
+    }
+
+    private BroadcastReceiver deleteReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals("DELETED")) {
+                terminateActivity();
+            }
+        }
+    };
 
 
 }
