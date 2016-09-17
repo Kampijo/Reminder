@@ -12,7 +12,7 @@ import android.widget.EditText;
 
 
 public class createOrEditNote extends AppCompatActivity {
-    private EditText editText, editText2;
+    private EditText title, content;
     private reminderDatabase database;
     private int id = 0;
 
@@ -26,16 +26,16 @@ public class createOrEditNote extends AppCompatActivity {
         Intent intent = getIntent();
         id = intent.getIntExtra("noteID", 0);
 
-        editText = (EditText) findViewById(R.id.noteContent);
-        editText2 = (EditText) findViewById(R.id.noteTitle);
+        content = (EditText) findViewById(R.id.noteContent);
+        title = (EditText) findViewById(R.id.noteTitle);
 
         if (id > 0) {
             Cursor cursor = database.getItem(id);
             cursor.moveToFirst();
-            String content = cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_CONTENT));
-            String title = cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TITLE));
-            editText.setText(content);
-            editText2.setText(title);
+            String contentString = cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_CONTENT));
+            String titleString = cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TITLE));
+            content.setText(contentString);
+            title.setText(titleString);
         }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -43,11 +43,7 @@ public class createOrEditNote extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
-        String content = editText.getText().toString();
-        String title = editText2.getText().toString();
-        saveDialog(id, title, content).show();
-
+        saveNote();
     }
 
     @Override
@@ -64,7 +60,7 @@ public class createOrEditNote extends AppCompatActivity {
             case R.id.action_settings:
                 break;
             case android.R.id.home:
-                terminateActivity();
+                saveNote();
             default:
                 break;
         }
@@ -119,7 +115,6 @@ public class createOrEditNote extends AppCompatActivity {
                         }
                         terminateActivity();
                         database.close();
-                        editText.getText().clear();
                         dialog.dismiss();
                     }
 
@@ -128,7 +123,6 @@ public class createOrEditNote extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         terminateActivity();
                         database.close();
-                        editText.getText().clear();
                         dialog.dismiss();
 
                     }
@@ -141,5 +135,10 @@ public class createOrEditNote extends AppCompatActivity {
         finish();
     }
 
+    private void saveNote(){
+        String contentString = content.getText().toString();
+        String titleString = title.getText().toString();
+        saveDialog(id, titleString, contentString).show();
+    }
 
 }

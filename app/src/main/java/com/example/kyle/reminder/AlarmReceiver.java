@@ -27,7 +27,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification n = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.ic_event_note_black_48dp)
+                .setSmallIcon(R.drawable.ic_calendar_check_black_48dp)
                 .setContentTitle(title)
                 .setContentText(msg)
                 .setContentIntent(clicked)

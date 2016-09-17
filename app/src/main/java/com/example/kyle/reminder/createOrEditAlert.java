@@ -35,12 +35,11 @@ public class createOrEditAlert extends AppCompatActivity {
 
     private SimpleAdapter adapter;
     private reminderDatabase database;
-    private EditText editText, editText2;
+    private EditText content, title;
     private String time, date;
     private int id;
     private Map<String, String> item1, item2;
     private DateFormat df, df1;
-    private Intent intent;
     private Calendar alertTime;
 
     @Override
@@ -57,10 +56,10 @@ public class createOrEditAlert extends AppCompatActivity {
         item2 = new HashMap<String, String>();
 
         database = new reminderDatabase(this);
-        editText = (EditText) findViewById(R.id.alertContent);
-        editText2 = (EditText) findViewById(R.id.alertTitle);
+        content = (EditText) findViewById(R.id.alertContent);
+        title = (EditText) findViewById(R.id.alertTitle);
 
-        intent = getIntent();
+        Intent intent = getIntent();
         id = intent.getIntExtra("alertID", 0);
         alertTime = Calendar.getInstance();
 
@@ -71,11 +70,11 @@ public class createOrEditAlert extends AppCompatActivity {
         if (id > 0) {
             Cursor cursor = database.getItem(id);
             cursor.moveToFirst();
-            String content = cursor.getString(cursor.getColumnIndex
+            String contentString = cursor.getString(cursor.getColumnIndex
                     (reminderDatabase.DB_COLUMN_CONTENT));
-            String title = cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TITLE));
-            editText.setText(content);
-            editText2.setText(title);
+            String titleString = cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TITLE));
+            content.setText(contentString);
+            title.setText(titleString);
 
             long timeInMilliseconds = cursor.getLong(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME));
 
@@ -131,15 +130,7 @@ public class createOrEditAlert extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
-        String content = editText.getText().toString();
-        String title = editText2.getText().toString();
-        if (!(alertTime.getTimeInMillis() < Calendar.getInstance().getTimeInMillis())) {
-            saveDialog(id, title, content, alertTime.getTimeInMillis()).show();
-
-        } else {
-            errorDialog().show();
-        }
+        saveAlert();
     }
 
     @Override
@@ -158,7 +149,7 @@ public class createOrEditAlert extends AppCompatActivity {
                 break;
 
             case android.R.id.home:
-                terminateActivity();
+                saveAlert();
             default:
                 break;
 
@@ -182,7 +173,7 @@ public class createOrEditAlert extends AppCompatActivity {
     }
 
     private DatePickerDialog datePicker() {
-        return new DatePickerDialog(createOrEditAlert.this,
+        DatePickerDialog datePicker = new  DatePickerDialog(createOrEditAlert.this,
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
@@ -194,6 +185,8 @@ public class createOrEditAlert extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                     }
                 }, alertTime.get(Calendar.YEAR), alertTime.get(Calendar.MONTH), alertTime.get(Calendar.DAY_OF_MONTH));
+        datePicker.getDatePicker().setMinDate(Calendar.getInstance().getTimeInMillis());
+        return datePicker;
     }
 
     private AlertDialog saveDialog(int id, String title, String content, long time) {
@@ -236,7 +229,6 @@ public class createOrEditAlert extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int i) {
                         terminateActivity();
                         database.close();
-                        editText.getText().clear();
                         dialog.dismiss();
 
                     }
@@ -294,12 +286,22 @@ public class createOrEditAlert extends AppCompatActivity {
         alarm.setAction(AlarmService.CREATE);
         startService(alarm);
         database.close();
-        editText.getText().clear();
     }
 
     private void terminateActivity() {
         startActivity(new Intent(this, MainActivity.class));
         finish();
+    }
+
+    private void saveAlert(){
+        String contentString = content.getText().toString();
+        String titleString = title.getText().toString();
+        if (!(alertTime.getTimeInMillis() < Calendar.getInstance().getTimeInMillis())) {
+            saveDialog(id, titleString, contentString, alertTime.getTimeInMillis()).show();
+
+        } else {
+            saveDialog(id, titleString, contentString, Calendar.getInstance().getTimeInMillis()).show();
+        }
     }
 
     private BroadcastReceiver deleteReceiver = new BroadcastReceiver() {

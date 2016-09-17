@@ -47,10 +47,11 @@ public class MainActivity extends AppCompatActivity {
                 R.id.reminder
         };
 
-        cursorAdapter = new SimpleCursorAdapter(this, R.layout.list_item_layout,
-                cursor, columns, widgets, 0);
+        cursorAdapter = new reminderCursorAdapter(this, R.layout.list_item_layout,
+                cursor, columns, widgets);
 
         ListView listView = (ListView) findViewById(R.id.reminderList);
+        listView.setEmptyView(findViewById(R.id.empty));
         listView.setAdapter(cursorAdapter);
         refresh();
 

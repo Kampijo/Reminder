@@ -20,4 +20,13 @@
         android:divider="@null"
         android:layout_alignParentStart="true" />
 
+    <TextView
+        android:id="@+id/empty"
+        android:text="@string/empty"
+        android:textSize="20dp"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        />
+
 </RelativeLayout>
