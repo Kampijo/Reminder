@@ -16,7 +16,8 @@
         android:hint="@string/titleHint"
         android:gravity="start"
         android:layout_gravity="top"
-        android:maxLength="35" />
+        android:inputType="textPersonName"
+        android:maxLength="@string/textLimit" />
     <EditText
         android:layout_width="match_parent"
         android:layout_below="@id/noteTitle"

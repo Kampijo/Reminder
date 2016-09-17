@@ -6,4 +6,6 @@
     <string name="addAlert">Add Alert</string>
     <string name="delete">Delete</string>
     <string name="settings">Settings</string>
+    <string name="empty">No reminders.</string>
+    <string name="textLimit">25</string>
 </resources>
