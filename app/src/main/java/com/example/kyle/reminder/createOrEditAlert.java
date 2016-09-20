@@ -61,7 +61,7 @@ public class createOrEditAlert extends AppCompatActivity {
         content = (EditText) findViewById(R.id.alertContent);
         title = (EditText) findViewById(R.id.alertTitle);
 
-        repeatModes = new String[]{"None", "Daily", "Monthly", "Yearly"};
+        repeatModes = new String[]{"None", "Hourly", "Daily", "Monthly", "Yearly"};
         repeatMode = 0;
 
         Intent intent = getIntent();
@@ -222,12 +222,12 @@ public class createOrEditAlert extends AppCompatActivity {
                             cancelPrevious.putExtra("id", saveId);
                             cancelPrevious.setAction(AlarmService.CANCEL);
                             startService(cancelPrevious);
-                            database.updateAlert(saveId, saveTitle, saveMessage, saveTime);
+                            database.updateAlert(saveId, saveTitle, saveMessage, saveTime, repeatMode);
                             createAlarm(saveId);
 
                             // creates alarm for new alert
                         } else {
-                            createAlarm((int) database.insertAlert(saveTitle, saveMessage, saveTime));
+                            createAlarm((int) database.insertAlert(saveTitle, saveMessage, saveTime, repeatMode));
                         }
                         terminateActivity();
                         dialog.dismiss();

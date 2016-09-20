@@ -10,6 +10,8 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.support.v4.content.LocalBroadcastManager;
 
+import java.util.Calendar;
+
 /**
  * Created by kyle on 07/09/16.
  * <p/>
@@ -53,13 +55,18 @@ public class AlarmService extends IntentService {
         intent.putExtra("title", cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TITLE)));
         intent.putExtra("msg", cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_CONTENT)));
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, id, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
 
         long timeInMilliseconds = cursor.getLong(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME));
 
         if (CREATE.equals(action)) {
-            alarm.set(AlarmManager.RTC_WAKEUP, timeInMilliseconds, pendingIntent);
+            long currentTime = Calendar.getInstance().getTimeInMillis();
+            if(timeInMilliseconds <= currentTime){
+                alarm.set(AlarmManager.RTC_WAKEUP, currentTime, pendingIntent);
+            } else {
+                alarm.set(AlarmManager.RTC_WAKEUP, timeInMilliseconds, pendingIntent);
+            }
 
         } else if (DELETE.equals(action)) {
 
