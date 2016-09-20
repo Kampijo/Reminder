@@ -11,14 +11,12 @@
 
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/reminderList"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
-        android:layout_alignParentLeft="true"
         android:dividerHeight="0px"
-        android:divider="@null"
-        android:layout_alignParentStart="true" />
+        android:divider="@null" />
 
     <TextView
         android:id="@+id/empty"

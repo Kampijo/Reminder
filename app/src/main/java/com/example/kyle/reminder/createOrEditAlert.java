@@ -37,10 +37,11 @@ public class createOrEditAlert extends AppCompatActivity {
     private reminderDatabase database;
     private EditText content, title;
     private String time, date;
-    private int id;
-    private Map<String, String> item1, item2;
+    private int id, repeatMode;
+    private Map<String, String> item1, item2, item3;
     private DateFormat df, df1;
     private Calendar alertTime;
+    private String[] repeatModes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,14 +55,19 @@ public class createOrEditAlert extends AppCompatActivity {
         List<Map<String, String>> mapList = new ArrayList<Map<String, String>>();
         item1 = new HashMap<String, String>();
         item2 = new HashMap<String, String>();
+        item3 = new HashMap<String, String>();
 
         database = new reminderDatabase(this);
         content = (EditText) findViewById(R.id.alertContent);
         title = (EditText) findViewById(R.id.alertTitle);
 
+        repeatModes = new String[]{"None", "Daily", "Monthly", "Yearly"};
+        repeatMode = 0;
+
         Intent intent = getIntent();
         id = intent.getIntExtra("alertID", 0);
         alertTime = Calendar.getInstance();
+
 
         df = new SimpleDateFormat("hh:mm aa");
         df1 = new SimpleDateFormat("dd/MM/yy");
@@ -99,10 +105,13 @@ public class createOrEditAlert extends AppCompatActivity {
         item1.put("subtext", time);
         item2.put("title", "Date");
         item2.put("subtext", date);
+        item3.put("title", "Repeat");
+        item3.put("subtext", repeatModes[repeatMode]);
 
 
         mapList.add(item1);
         mapList.add(item2);
+        mapList.add(item3);
         adapter = new SimpleAdapter(this, mapList, android.R.layout.simple_list_item_2,
                 new String[]{"title", "subtext"}, new int[]{android.R.id.text1, android.R.id.text2});
         ListView listView = (ListView) findViewById(R.id.alertSettings);
@@ -119,6 +128,8 @@ public class createOrEditAlert extends AppCompatActivity {
                 } else if (i == 1) {
                     DatePickerDialog datePicker = datePicker();
                     datePicker.show();
+                } else {
+                    repeatDialog().show();
                 }
 
             }
@@ -264,16 +275,28 @@ public class createOrEditAlert extends AppCompatActivity {
                 .create();
 
     }
-
-    private AlertDialog errorDialog() {
-
+    private AlertDialog repeatDialog() {
+        final int prevRepeat = repeatMode;
         return new AlertDialog.Builder(this)
-                .setMessage("There is no such thing as time travel.")
-                .setTitle("Error")
+                .setTitle("Repeat")
+                .setSingleChoiceItems(repeatModes, 0, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        repeatMode = i;
+                    }
+                })
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
+                        item3.put("subtext", repeatModes[repeatMode]);
+                        adapter.notifyDataSetChanged();
                         dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        repeatMode = prevRepeat;
                     }
                 })
                 .create();

@@ -2,6 +2,7 @@ package com.example.kyle.reminder;
 
 import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -64,11 +65,15 @@ public class AlarmService extends IntentService {
 
             alarm.cancel(pendingIntent);
             database.deleteItem(id);
+	        NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+	        notificationManager.cancel(id);
             if (!deleteFromMain) {
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("DELETED"));
             } else {
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("FINISHED"));
             }
+
         } else if (CANCEL.equals(action)) {
             alarm.cancel(pendingIntent);
         }
