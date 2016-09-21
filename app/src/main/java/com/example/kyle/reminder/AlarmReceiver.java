@@ -26,10 +26,11 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
         reminderDatabase database = new reminderDatabase(context);
         Cursor cursor = database.getItem(id);
+        cursor.moveToFirst();
+
         int frequency = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_FREQUENCY));
         Calendar time = Calendar.getInstance();
         time.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME)));
-
 
         if (frequency > 0) {
             if (frequency == HOURLY) {

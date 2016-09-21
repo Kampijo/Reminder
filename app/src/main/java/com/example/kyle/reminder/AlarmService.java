@@ -61,12 +61,7 @@ public class AlarmService extends IntentService {
         long timeInMilliseconds = cursor.getLong(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME));
 
         if (CREATE.equals(action)) {
-            long currentTime = Calendar.getInstance().getTimeInMillis();
-            if(timeInMilliseconds <= currentTime){
-                alarm.set(AlarmManager.RTC_WAKEUP, currentTime, pendingIntent);
-            } else {
-                alarm.set(AlarmManager.RTC_WAKEUP, timeInMilliseconds, pendingIntent);
-            }
+            alarm.set(AlarmManager.RTC_WAKEUP, timeInMilliseconds, pendingIntent);
 
         } else if (DELETE.equals(action)) {
 
