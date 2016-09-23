@@ -32,7 +32,7 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
         public TextView content;
         public ImageView icon;
 
-        public ViewHolder(View view){
+        public ViewHolder(View view) {
 
             super(view);
             title = (TextView) view.findViewById(R.id.title);
@@ -42,14 +42,14 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
         }
     }
 
-    public reminderAdapter(Context context, Cursor cursor, RecyclerView recyclerView){
+    public reminderAdapter(Context context, Cursor cursor, RecyclerView recyclerView) {
         mContext = context;
         mCursor = cursor;
         mRecyclerView = recyclerView;
         database = new reminderDatabase(mContext);
     }
 
-    private Context getContext(){
+    private Context getContext() {
         return mContext;
     }
 
@@ -59,7 +59,7 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        if(database.isEmpty()){
+        if (database.isEmpty()) {
             View emptyView = parent.findViewById(R.id.empty);
             return new ViewHolder(emptyView);
         } else {
@@ -92,14 +92,17 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
             viewHolder.icon.setImageResource(R.drawable.ic_note_grey600_48dp);
         }
     }
-    public int getItemCount(){
+
+    public int getItemCount() {
         mCursor = database.getAllItems();
         return mCursor.getCount();
     }
+
     private AlertDialog deleteDialog(int id, final int position) {
         final int deleteId = id;
         final Cursor cursor = database.getItem(id);
         cursor.moveToFirst();
+
         return new AlertDialog.Builder(mContext)
                 .setTitle("Confirm")
                 .setMessage("Do you want to delete?")
@@ -115,7 +118,6 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
                         if ((cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE)).equals("alert"))) {
                             Intent delete = new Intent(mContext, AlarmService.class);
                             delete.putExtra("id", deleteId);
-                            delete.putExtra("position", position);
                             delete.putExtra("deletedFromMain", true);
                             delete.setAction(AlarmService.DELETE);
                             mContext.startService(delete);
@@ -127,7 +129,6 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
 
                             // sends refresh signal to Main UI
                             Intent refresh = new Intent("REFRESH");
-                            refresh.putExtra("position", position);
                             LocalBroadcastManager.getInstance(mContext).sendBroadcast(refresh);
                         }
                         dialog.dismiss();
@@ -145,13 +146,13 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
     }
 
     // short click listener for viewing notes/alerts
-    class reminderClickListener implements View.OnClickListener{
+    class reminderClickListener implements View.OnClickListener {
         public void onClick(View view) {
             int position = mRecyclerView.getChildAdapterPosition(view);
             mCursor.moveToPosition(position);
             Intent intent;
             String type = mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE));
-            if(type.equalsIgnoreCase("alert")){
+            if (type.equalsIgnoreCase("alert")) {
                 intent = new Intent(mContext, createOrEditAlert.class);
             } else {
                 intent = new Intent(mContext, createOrEditNote.class);
@@ -161,8 +162,8 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
         }
     }
 
-    class reminderLongClickListener implements View.OnLongClickListener{
-        public boolean onLongClick(View view){
+    class reminderLongClickListener implements View.OnLongClickListener {
+        public boolean onLongClick(View view) {
             int position = mRecyclerView.getChildAdapterPosition(view);
             mCursor.moveToPosition(position);
             int id = mCursor.getInt(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_ID));

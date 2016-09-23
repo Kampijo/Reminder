@@ -24,10 +24,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="10dp"
-            android:paddingRight="12dp"
+            android:paddingRight="34dp"
             android:paddingTop="12dp"
             android:textSize="16dp"
-            android:maxLines="1"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:textStyle="bold" />
 
         <TextView
@@ -49,8 +50,8 @@
         </RelativeLayout>
 
         <ImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_gravity="right"
             android:id="@+id/icon"
             android:paddingTop="12dp"

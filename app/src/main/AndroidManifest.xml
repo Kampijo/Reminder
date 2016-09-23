@@ -18,8 +18,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".createOrEditNote" />
-        <activity android:name=".createOrEditAlert"></activity>
+
+        <activity android:name=".createOrEditNote"
+            android:parentActivityName=".MainActivity" >
+        <!-- Parent activity meta-data to support 4.0 and lower -->
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".MainActivity" />
+        />
+        </activity>
+
+        <activity android:name=".createOrEditAlert"
+            android:parentActivityName=".MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+            />
+        </activity>
         <receiver android:name=".AlarmSetter">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

@@ -113,7 +113,8 @@ public class reminderDatabase extends SQLiteOpenHelper {
         return db.delete(DB_TABLE_NAME, DB_COLUMN_ID + " = ? ",
                 new String[]{Integer.toString(id)});
     }
-    public boolean isEmpty(){
+
+    public boolean isEmpty() {
         return getAllItems().getCount() == 0;
     }
 

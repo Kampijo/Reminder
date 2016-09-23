@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -267,8 +268,9 @@ public class createOrEditAlert extends AppCompatActivity {
                             delete.putExtra("id", deleteId);
                             delete.setAction(AlarmService.DELETE);
                             startService(delete);
+                        } else {
+                            terminateActivity();
                         }
-                        terminateActivity();
                     }
 
                 })
@@ -320,8 +322,7 @@ public class createOrEditAlert extends AppCompatActivity {
 
     // go back to main activity
     private void terminateActivity() {
-        startActivity(new Intent(this, MainActivity.class));
-        finish();
+        NavUtils.navigateUpFromSameTask(this);
     }
 
     // saves the alert (Handles case where if time set to before current, just set immediate alert)
@@ -345,7 +346,6 @@ public class createOrEditAlert extends AppCompatActivity {
             }
         }
     };
-
 
 
 }

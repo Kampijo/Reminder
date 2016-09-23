@@ -70,14 +70,12 @@ public class AlarmService extends IntentService {
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(id);
 
-            if(deletedFromMain){
+            if (deletedFromMain) {
                 Intent refresh = new Intent("REFRESH");
-                refresh.putExtra("position", changePosition);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(refresh);
             } else {
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("DELETED"));
             }
-
 
 
         } else if (CANCEL.equals(action)) {

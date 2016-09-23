@@ -2,24 +2,15 @@ package com.example.kyle.reminder;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -71,23 +62,21 @@ public class MainActivity extends AppCompatActivity {
         addAlert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, createOrEditAlert.class));
-                finish();
+                startActivity(new Intent(view.getContext(), createOrEditAlert.class));
             }
         });
         addNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, createOrEditNote.class));
-                finish();
+                startActivity(new Intent(view.getContext(), createOrEditNote.class));
             }
         });
     }
 
 
     // checks if RecyclerView is empty and sets emptyView
-    private void emptyCheck(){
-        if(database.isEmpty()){
+    private void emptyCheck() {
+        if (database.isEmpty()) {
             empty.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
         } else {
@@ -102,10 +91,7 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals("REFRESH")) {
                 emptyCheck();
-                int position = intent.getIntExtra("position", 0);
-                // notify item removal
-                adapter.notifyItemRemoved(position);
-                adapter.notifyItemRangeChanged(position, 1);
+                adapter.notifyDataSetChanged();
             }
         }
     };
