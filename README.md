@@ -20,7 +20,10 @@ Alert feature, with working alarm notification has been implemented.
 
 # TO-DO
 Improve the UI <br/>
-General QOL changes (Sound picker, ~~tap to see note on notification~~, etc)
+General QOL changes <br/>
+
+# Acknowledgements
+[FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) by Dmytro Tarianyk was used for the FloatingActionMenu. <br/>
 
 
 

@@ -87,7 +87,8 @@ public class reminderDatabase extends SQLiteOpenHelper {
                 new String[]{Integer.toString(id)});
         return true;
     }
-    public boolean updateTime(Integer id, long time){
+
+    public boolean updateTime(Integer id, long time) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DB_COLUMN_TIME, time);
@@ -99,19 +100,21 @@ public class reminderDatabase extends SQLiteOpenHelper {
     public Cursor getItem(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + DB_TABLE_NAME + " WHERE " +
-                DB_COLUMN_ID + "=?", new String[]{Integer.toString(id)});
+                DB_COLUMN_ID + " = ? ", new String[]{Integer.toString(id)});
     }
 
     public Cursor getAllItems() {
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("SELECT * FROM " + DB_TABLE_NAME, null);
+        return db.rawQuery("SELECT * FROM " + DB_TABLE_NAME + " ORDER BY " + DB_COLUMN_ID + " DESC", null);
     }
 
     public Integer deleteItem(Integer id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(DB_TABLE_NAME,
-                DB_COLUMN_ID + " = ? ",
+        return db.delete(DB_TABLE_NAME, DB_COLUMN_ID + " = ? ",
                 new String[]{Integer.toString(id)});
+    }
+    public boolean isEmpty(){
+        return getAllItems().getCount() == 0;
     }
 
 }

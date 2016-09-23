@@ -65,7 +65,7 @@ public class createOrEditAlert extends AppCompatActivity {
         repeatMode = 0;
 
         Intent intent = getIntent();
-        id = intent.getIntExtra("alertID", 0);
+        id = intent.getIntExtra("ID", 0);
         alertTime = Calendar.getInstance();
 
 
@@ -83,7 +83,7 @@ public class createOrEditAlert extends AppCompatActivity {
             title.setText(titleString);
 
             long timeInMilliseconds = cursor.getLong(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME));
-
+            repeatMode = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_FREQUENCY));
             alertTime.setTimeInMillis(timeInMilliseconds);
             DateFormat df = new SimpleDateFormat("hh:mm aa");
             DateFormat df1 = new SimpleDateFormat("dd/MM/yy");
@@ -135,6 +135,7 @@ public class createOrEditAlert extends AppCompatActivity {
             }
         });
 
+        getSupportActionBar().setTitle("Create Alert");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
@@ -153,14 +154,15 @@ public class createOrEditAlert extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
             case R.id.action_del_alert:
                 deleteDialog(id).show();
-
-            case R.id.action_settings:
                 break;
 
             case android.R.id.home:
                 saveAlert();
+                break;
+
             default:
                 break;
 
@@ -169,6 +171,7 @@ public class createOrEditAlert extends AppCompatActivity {
         return true;
     }
 
+    // time picker
     private TimePickerDialog timePicker() {
         return new TimePickerDialog(createOrEditAlert.this,
                 new TimePickerDialog.OnTimeSetListener() {
@@ -183,8 +186,9 @@ public class createOrEditAlert extends AppCompatActivity {
                 }, alertTime.get(Calendar.HOUR_OF_DAY), alertTime.get(Calendar.MINUTE), false);
     }
 
+    // date picker
     private DatePickerDialog datePicker() {
-        DatePickerDialog datePicker = new  DatePickerDialog(createOrEditAlert.this,
+        DatePickerDialog datePicker = new DatePickerDialog(createOrEditAlert.this,
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
@@ -215,6 +219,7 @@ public class createOrEditAlert extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int i) {
+
                         // if item exists, cancel previous alarm, update alert, then set new alarm
                         if (saveId > 0) {
                             Intent cancelPrevious = new Intent(createOrEditAlert.this,
@@ -250,20 +255,20 @@ public class createOrEditAlert extends AppCompatActivity {
     private AlertDialog deleteDialog(int id) {
 
         final int deleteId = id;
-        Log.i("id", "" + deleteId);
         return new AlertDialog.Builder(this)
                 .setTitle("Confirm")
                 .setMessage("Do you want to delete?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int i) {
+
                         if (deleteId > 0) {
-                            Intent cancel = new Intent(createOrEditAlert.this, AlarmService.class);
-                            cancel.putExtra("id", deleteId);
-                            cancel.setAction(AlarmService.DELETE);
-                            startService(cancel);
-                        } else {
-                            terminateActivity();
+                            // delete the alarm
+                            Intent delete = new Intent(createOrEditAlert.this, AlarmService.class);
+                            delete.putExtra("id", deleteId);
+                            delete.setAction(AlarmService.DELETE);
+                            startService(delete);
                         }
+                        terminateActivity();
                     }
 
                 })
@@ -275,6 +280,8 @@ public class createOrEditAlert extends AppCompatActivity {
                 .create();
 
     }
+
+    // set repeat mode from None, Hour, Daily, Monthly, Yearly
     private AlertDialog repeatDialog() {
         final int prevRepeat = repeatMode;
         return new AlertDialog.Builder(this)
@@ -311,12 +318,14 @@ public class createOrEditAlert extends AppCompatActivity {
         database.close();
     }
 
+    // go back to main activity
     private void terminateActivity() {
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 
-    private void saveAlert(){
+    // saves the alert (Handles case where if time set to before current, just set immediate alert)
+    private void saveAlert() {
         String contentString = content.getText().toString();
         String titleString = title.getText().toString();
         if (!(alertTime.getTimeInMillis() < Calendar.getInstance().getTimeInMillis())) {
@@ -327,6 +336,7 @@ public class createOrEditAlert extends AppCompatActivity {
         }
     }
 
+    // once item is deleted, we can safely exit the activity
     private BroadcastReceiver deleteReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -335,6 +345,7 @@ public class createOrEditAlert extends AppCompatActivity {
             }
         }
     };
+
 
 
 }

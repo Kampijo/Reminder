@@ -24,7 +24,7 @@ public class createOrEditNote extends AppCompatActivity {
         database = new reminderDatabase(this);
 
         Intent intent = getIntent();
-        id = intent.getIntExtra("noteID", 0);
+        id = intent.getIntExtra("ID", 0);
 
         content = (EditText) findViewById(R.id.noteContent);
         title = (EditText) findViewById(R.id.noteTitle);
@@ -37,7 +37,7 @@ public class createOrEditNote extends AppCompatActivity {
             content.setText(contentString);
             title.setText(titleString);
         }
-
+        getSupportActionBar().setTitle("Create Note");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
@@ -55,12 +55,15 @@ public class createOrEditNote extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
             case R.id.action_del_note:
                 deleteDialog(id).show();
-            case R.id.action_settings:
                 break;
+
             case android.R.id.home:
                 saveNote();
+                break;
+
             default:
                 break;
         }
@@ -135,7 +138,7 @@ public class createOrEditNote extends AppCompatActivity {
         finish();
     }
 
-    private void saveNote(){
+    private void saveNote() {
         String contentString = content.getText().toString();
         String titleString = title.getText().toString();
         saveDialog(id, titleString, contentString).show();
