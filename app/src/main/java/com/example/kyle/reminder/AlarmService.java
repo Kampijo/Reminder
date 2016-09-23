@@ -2,12 +2,15 @@ package com.example.kyle.reminder;
 
 import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.support.v4.content.LocalBroadcastManager;
+
+import java.util.Calendar;
 
 /**
  * Created by kyle on 07/09/16.
@@ -52,8 +55,8 @@ public class AlarmService extends IntentService {
         intent.putExtra("title", cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TITLE)));
         intent.putExtra("msg", cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_CONTENT)));
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, id, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
 
         long timeInMilliseconds = cursor.getLong(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME));
 
@@ -64,11 +67,15 @@ public class AlarmService extends IntentService {
 
             alarm.cancel(pendingIntent);
             database.deleteItem(id);
+	        NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+	        notificationManager.cancel(id);
             if (!deleteFromMain) {
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("DELETED"));
             } else {
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("FINISHED"));
             }
+
         } else if (CANCEL.equals(action)) {
             alarm.cancel(pendingIntent);
         }
