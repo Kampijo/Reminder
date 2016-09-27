@@ -13,7 +13,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -201,7 +200,7 @@ public class createOrEditAlert extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                     }
                 }, alertTime.get(Calendar.YEAR), alertTime.get(Calendar.MONTH), alertTime.get(Calendar.DAY_OF_MONTH));
-        datePicker.getDatePicker().setMinDate(Calendar.getInstance().getTimeInMillis());
+        datePicker.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         return datePicker;
     }
 

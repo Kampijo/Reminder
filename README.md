@@ -1,11 +1,12 @@
 # Reminder
 
-A very simple reminder app.
+A simple Android material design reminder app.
 
-An application that allows you to add notes, remove notes, add alerts and remove alerts.
-Both notes and alerts are displayed in the list of the main screen.
+# Features
+Allows you to add notes, remove notes, add alerts and remove alerts. <br/>
+Repeated alert intervals. <br/>
+Notification alerts. <br/>
 
-When alert is set, notification with your message pops up once the alert time is reached.
 
 # Changelog
 ~~No save feature as of yet. Will get to it when I have the time.~~

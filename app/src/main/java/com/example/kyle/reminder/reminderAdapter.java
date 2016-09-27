@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+
 
 /**
  * Created by kyle on 22/09/16.
@@ -26,10 +28,12 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
     private RecyclerView mRecyclerView;
     public View.OnClickListener mListener = new reminderClickListener();
     public View.OnLongClickListener mLongListener = new reminderLongClickListener();
+    private SimpleDateFormat timeFormat = new SimpleDateFormat("MMM d ''yy");
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
         public TextView content;
+        public TextView time;
         public ImageView icon;
 
         public ViewHolder(View view) {
@@ -37,6 +41,7 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
             super(view);
             title = (TextView) view.findViewById(R.id.title);
             content = (TextView) view.findViewById(R.id.reminder);
+            time = (TextView) view.findViewById(R.id.timeLabel);
             icon = (ImageView) view.findViewById(R.id.icon);
 
         }
@@ -87,9 +92,8 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
 
         String type = mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE));
         if (type.equalsIgnoreCase("alert")) {
+            viewHolder.time.setText(timeFormat.format(mCursor.getLong(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME))));
             viewHolder.icon.setImageResource(R.drawable.ic_bell_grey600_48dp);
-        } else {
-            viewHolder.icon.setImageResource(R.drawable.ic_note_grey600_48dp);
         }
     }
 
