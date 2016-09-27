@@ -10,8 +10,6 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.support.v4.content.LocalBroadcastManager;
 
-import java.util.Calendar;
-
 /**
  * Created by kyle on 07/09/16.
  * <p/>
@@ -36,14 +34,15 @@ public class AlarmService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         String action = intent.getAction();
         int id = intent.getIntExtra("id", 0);
-        boolean deleteFromMain = intent.getBooleanExtra("deleteFromMain", false);
+        int position = intent.getIntExtra("position", 0);
+        boolean deletedFromMain = intent.getBooleanExtra("deletedFromMain", false);
 
         if (matcher.matchAction(action)) {
-            execute(action, id, deleteFromMain);
+            execute(action, id, position, deletedFromMain);
         }
     }
 
-    private void execute(String action, int id, boolean deleteFromMain) {
+    private void execute(String action, int id, int changePosition, boolean deletedFromMain) {
 
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         reminderDatabase database = new reminderDatabase(this);
@@ -67,14 +66,17 @@ public class AlarmService extends IntentService {
 
             alarm.cancel(pendingIntent);
             database.deleteItem(id);
-	        NotificationManager notificationManager =
+            NotificationManager notificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-	        notificationManager.cancel(id);
-            if (!deleteFromMain) {
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("DELETED"));
+            notificationManager.cancel(id);
+
+            if (deletedFromMain) {
+                Intent refresh = new Intent("REFRESH");
+                LocalBroadcastManager.getInstance(this).sendBroadcast(refresh);
             } else {
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("FINISHED"));
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("DELETED"));
             }
+
 
         } else if (CANCEL.equals(action)) {
             alarm.cancel(pendingIntent);

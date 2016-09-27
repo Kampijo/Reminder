@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.WakefulBroadcastReceiver;
+
 import java.util.Calendar;
 
 /**
@@ -17,6 +18,7 @@ import java.util.Calendar;
 public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     private final int HOURLY = 1, DAILY = 2, MONTHLY = 3, YEARLY = 4;
+
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -54,7 +56,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         }
 
         Intent result = new Intent(context, createOrEditAlert.class);
-        result.putExtra("alertID", id);
+        result.putExtra("ID", id);
         PendingIntent clicked = PendingIntent.getActivity(context, id, result,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 
