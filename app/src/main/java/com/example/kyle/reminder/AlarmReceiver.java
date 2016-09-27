@@ -17,7 +17,7 @@ import java.util.Calendar;
  */
 public class AlarmReceiver extends WakefulBroadcastReceiver {
 
-    private final int HOURLY = 1, DAILY = 2, MONTHLY = 3, YEARLY = 4;
+    private final int HOURLY = 1, DAILY = 2, WEEKLY = 3, MONTHLY = 4, YEARLY = 5;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -41,6 +41,8 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             } else if (frequency == DAILY) {
                 time.add(Calendar.DATE, 1);
 
+            } else if (frequency == WEEKLY) {
+                time.add(Calendar.DATE, 7);
             } else if (frequency == MONTHLY) {
                 time.add(Calendar.MONTH, 1);
 

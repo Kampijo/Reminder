@@ -34,15 +34,14 @@ public class AlarmService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         String action = intent.getAction();
         int id = intent.getIntExtra("id", 0);
-        int position = intent.getIntExtra("position", 0);
         boolean deletedFromMain = intent.getBooleanExtra("deletedFromMain", false);
 
         if (matcher.matchAction(action)) {
-            execute(action, id, position, deletedFromMain);
+            execute(action, id, deletedFromMain);
         }
     }
 
-    private void execute(String action, int id, int changePosition, boolean deletedFromMain) {
+    private void execute(String action, int id, boolean deletedFromMain) {
 
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         reminderDatabase database = new reminderDatabase(this);

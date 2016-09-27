@@ -61,7 +61,7 @@ public class createOrEditAlert extends AppCompatActivity {
         content = (EditText) findViewById(R.id.alertContent);
         title = (EditText) findViewById(R.id.alertTitle);
 
-        repeatModes = new String[]{"None", "Hourly", "Daily", "Monthly", "Yearly"};
+        repeatModes = new String[]{"None", "Hourly", "Daily", "Weekly", "Monthly", "Yearly"};
         repeatMode = 0;
 
         Intent intent = getIntent();
