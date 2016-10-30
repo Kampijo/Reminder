@@ -7,8 +7,8 @@ Allows you to add notes, remove notes, add alerts and remove alerts. <br/>
 Repeated alert intervals. <br/>
 Notification alerts.
 
-![](http://i.imgur.com/ALpfiXem.png) ![](http://i.imgur.com/tCMZdNjm.png)
-![](http://i.imgur.com/5QzZJTWm.png) ![](http://i.imgur.com/KPW91sNm.png)
+![](http://i.imgur.com/ALpfiXel.png) ![](http://i.imgur.com/tCMZdNjl.png)
+![](http://i.imgur.com/5QzZJTWl.png) ![](http://i.imgur.com/KPW91sNl.png)
 
 
 # Changelog
