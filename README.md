@@ -1,11 +1,11 @@
 # Reminder
-
+![Reminder](http://i.imgur.com/vZKZp65.png)
 A simple Android material design reminder app.
 
 # Features
-Allows you to add notes, remove notes, add alerts and remove alerts. <br/>
-Repeated alert intervals. <br/>
-Notification alerts. <br/>
+Allows you to add notes, remove notes, add alerts and remove alerts.
+Repeated alert intervals.
+Notification alerts.
 
 
 # Changelog
@@ -20,11 +20,11 @@ Save feature has been added.
 Alert feature, with working alarm notification has been implemented.
 
 # TO-DO
-Improve the UI <br/>
-General QOL changes <br/>
+Improve the UI
+General QOL changes
 
 # Acknowledgements
-[FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) by Dmytro Tarianyk was used for the FloatingActionMenu. <br/>
+[FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) by Dmytro Tarianyk was used for the FloatingActionMenu.
 
 
 

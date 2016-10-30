@@ -107,7 +107,16 @@ public class reminderDatabase extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + DB_TABLE_NAME + " ORDER BY " + DB_COLUMN_ID + " DESC", null);
     }
-
+    public Cursor getAllAlerts(){
+	SQLiteDatabase db = this.getReadableDatabase();
+	return db.rawQuery("SELECT * FROM " + DB_TABLE_NAME + " WHERE " +
+			DB_COLUMN_TYPE + " = ? ", new String[]{"alert"});
+    }
+    public Cursor getAllNotes(){
+	SQLiteDatabase db = this.getReadableDatabase();
+	return db.rawQuery("SELECT * FROM " + DB_TABLE_NAME + " WHERE " +
+			DB_COLUMN_TYPE + " = ? ", new String[]{"note"});
+    }
     public Integer deleteItem(Integer id) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(DB_TABLE_NAME, DB_COLUMN_ID + " = ? ",

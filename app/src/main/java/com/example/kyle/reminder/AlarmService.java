@@ -23,7 +23,7 @@ public class AlarmService extends IntentService {
     private IntentFilter matcher;
 
     public AlarmService() {
-        super("IntentService");
+        super("AlarmService");
         matcher = new IntentFilter();
         matcher.addAction(CREATE);
         matcher.addAction(CANCEL);
@@ -54,12 +54,12 @@ public class AlarmService extends IntentService {
         intent.putExtra("msg", cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_CONTENT)));
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, id, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT);
 
         long timeInMilliseconds = cursor.getLong(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME));
 
         if (CREATE.equals(action)) {
-            alarm.set(AlarmManager.RTC_WAKEUP, timeInMilliseconds, pendingIntent);
+            alarm.setExact(AlarmManager.RTC_WAKEUP, timeInMilliseconds, pendingIntent);
 
         } else if (DELETE.equals(action)) {
 

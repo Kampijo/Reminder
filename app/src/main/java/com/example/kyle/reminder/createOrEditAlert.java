@@ -90,6 +90,7 @@ public class createOrEditAlert extends AppCompatActivity {
 
             time = df.format(alertTime.getTime());
             date = df1.format(alertTime.getTime());
+            getSupportActionBar().setTitle("Edit Alert");
             cursor.close();
 
             // Otherwise, set time and date list items to system time
@@ -98,6 +99,7 @@ public class createOrEditAlert extends AppCompatActivity {
             time = df.format(current.getTime());
             date = df1.format(current.getTime());
             alertTime.setTimeInMillis(current.getTimeInMillis());
+            getSupportActionBar().setTitle("Create Alert");
 
         }
 
@@ -135,7 +137,7 @@ public class createOrEditAlert extends AppCompatActivity {
             }
         });
 
-        getSupportActionBar().setTitle("Create Alert");
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
@@ -179,6 +181,7 @@ public class createOrEditAlert extends AppCompatActivity {
                     public void onTimeSet(TimePicker timePicker, int hour, int minute) {
                         alertTime.set(Calendar.HOUR_OF_DAY, hour);
                         alertTime.set(Calendar.MINUTE, minute);
+                        alertTime.set(Calendar.SECOND, 0);
                         time = df.format(alertTime.getTime());
                         item1.put("subtext", time);
                         adapter.notifyDataSetChanged();
@@ -296,6 +299,7 @@ public class createOrEditAlert extends AppCompatActivity {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
+                        // set label to selected repeat mode
                         item3.put("subtext", repeatModes[repeatMode]);
                         adapter.notifyDataSetChanged();
                         dialog.dismiss();

@@ -28,7 +28,8 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
     private RecyclerView mRecyclerView;
     public View.OnClickListener mListener = new reminderClickListener();
     public View.OnLongClickListener mLongListener = new reminderLongClickListener();
-    private SimpleDateFormat timeFormat = new SimpleDateFormat("MMM d ''yy");
+    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm, MMM d ''yy");
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
@@ -87,14 +88,21 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
     public void onBindViewHolder(reminderAdapter.ViewHolder viewHolder, int id) {
         mCursor.moveToPosition(id);
 
-        viewHolder.title.setText(mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TITLE)));
-        viewHolder.content.setText(mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_CONTENT)));
-
         String type = mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE));
         if (type.equalsIgnoreCase("alert")) {
             viewHolder.time.setText(timeFormat.format(mCursor.getLong(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME))));
-            viewHolder.icon.setImageResource(R.drawable.ic_bell_grey600_48dp);
+            viewHolder.icon.setImageResource(R.drawable.ic_bell_ring_grey600_18dp);
+            viewHolder.time.setVisibility(View.VISIBLE);
+            viewHolder.icon.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.time.setVisibility(View.GONE);
+            viewHolder.icon.setVisibility(View.GONE);
         }
+
+        viewHolder.title.setText(mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TITLE)));
+        viewHolder.content.setText(mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_CONTENT)));
+
+
     }
 
     public int getItemCount() {

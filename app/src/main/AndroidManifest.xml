@@ -14,14 +14,12 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity android:name=".createOrEditNote"
             android:parentActivityName=".MainActivity" >
-        <!-- Parent activity meta-data to support 4.0 and lower -->
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
             android:value=".MainActivity" />
@@ -30,7 +28,6 @@
 
         <activity android:name=".createOrEditAlert"
             android:parentActivityName=".MainActivity" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
@@ -41,8 +38,10 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".AlarmReceiver"></receiver>
-        <service android:name=".AlarmService"></service>
+        <receiver android:name=".AlarmReceiver"
+                  android:enabled="true"> </receiver>
+        <service android:name=".AlarmService"
+                 android:enabled="true"></service>
     </application>
 
 </manifest>

@@ -37,8 +37,11 @@ public class createOrEditNote extends AppCompatActivity {
             String titleString = cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TITLE));
             content.setText(contentString);
             title.setText(titleString);
+            getSupportActionBar().setTitle("Edit Note");
+        } else {
+            getSupportActionBar().setTitle("Create Note");
         }
-        getSupportActionBar().setTitle("Create Note");
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 

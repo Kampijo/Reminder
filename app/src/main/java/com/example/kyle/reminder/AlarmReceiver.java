@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
 import java.util.Calendar;
@@ -59,13 +60,21 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
         Intent result = new Intent(context, createOrEditAlert.class);
         result.putExtra("ID", id);
-        PendingIntent clicked = PendingIntent.getActivity(context, id, result,
-                PendingIntent.FLAG_CANCEL_CURRENT);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(createOrEditAlert.class);
+        stackBuilder.addNextIntent(result);
+        PendingIntent clicked = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        NotificationCompat.BigTextStyle bigStyle = new NotificationCompat.BigTextStyle();
+        bigStyle.setBigContentTitle(title);
+        bigStyle.bigText(msg);
         Notification n = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_calendar_check_black_48dp)
                 .setContentTitle(title)
                 .setContentText(msg)
+                .setPriority(Notification.PRIORITY_MAX)
+                .setWhen(0)
+                .setStyle(bigStyle)
                 .setContentIntent(clicked)
                 .setAutoCancel(true)
                 .build();
