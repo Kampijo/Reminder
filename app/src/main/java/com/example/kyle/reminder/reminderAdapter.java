@@ -7,14 +7,19 @@ import android.database.Cursor;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
+import com.bignerdranch.android.multiselector.MultiSelector;
+import com.bignerdranch.android.multiselector.SelectableHolder;
+import com.bignerdranch.android.multiselector.SwappingHolder;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 /**
  * Created by kyle on 22/09/16.
@@ -26,12 +31,14 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
     private Cursor mCursor;
     private reminderDatabase database;
     private RecyclerView mRecyclerView;
-    public View.OnClickListener mListener = new reminderClickListener();
-    public View.OnLongClickListener mLongListener = new reminderLongClickListener();
+    //public View.OnClickListener mListener = new reminderClickListener();
+    //public View.OnLongClickListener mLongListener = new reminderLongClickListener();
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm, MMM d ''yy");
 
+    private MultiSelector multiSelector = new MultiSelector();
+    private ArrayList<deleteItem> selectedItems = new ArrayList();
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends SwappingHolder implements View.OnClickListener, View.OnLongClickListener{
         public TextView title;
         public TextView content;
         public TextView time;
@@ -39,12 +46,42 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
 
         public ViewHolder(View view) {
 
-            super(view);
+            super(view, multiSelector);
+            view.setOnClickListener(this);
+            view.setOnLongClickListener(this);
             title = (TextView) view.findViewById(R.id.title);
             content = (TextView) view.findViewById(R.id.reminder);
             time = (TextView) view.findViewById(R.id.timeLabel);
             icon = (ImageView) view.findViewById(R.id.icon);
 
+        }
+        @Override
+        public void onClick(View view){
+            // if not in selection mode, go to detail screen
+            if (!multiSelector.tapSelection(ViewHolder.this)) {
+                int position = mRecyclerView.getChildAdapterPosition(view);
+                mCursor.moveToPosition(position);
+                Intent intent;
+                String type = mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE));
+                if (type.equalsIgnoreCase("alert")) {
+                    intent = new Intent(mContext, createOrEditAlert.class);
+                } else {
+                    intent = new Intent(mContext, createOrEditNote.class);
+                }
+                intent.putExtra("ID", mCursor.getInt(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_ID)));
+                mContext.startActivity(intent);
+            }
+            Log.d("POSITIONS", multiSelector.getSelectedPositions().toString());
+        }
+        @Override
+        public boolean onLongClick(View view){
+            if (!multiSelector.isSelectable()) {
+                Log.d("LONG CLICK", "LONG CLICKED");
+                multiSelector.setSelectable(true);
+                multiSelector.setSelected(ViewHolder.this, true);
+                return true;
+            }
+            return false;
         }
     }
 
@@ -74,8 +111,8 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
             View reminderView = inflater.inflate(R.layout.list_item_layout, parent, false);
 
             // set click listener for every view holder
-            reminderView.setOnClickListener(mListener);
-            reminderView.setOnLongClickListener(mLongListener);
+         //   reminderView.setOnClickListener(mListener);
+          //  reminderView.setOnLongClickListener(mLongListener);
 
             // Return a new holder
             ViewHolder viewHolder = new ViewHolder(reminderView);
@@ -87,7 +124,6 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
     @Override
     public void onBindViewHolder(reminderAdapter.ViewHolder viewHolder, int id) {
         mCursor.moveToPosition(id);
-
         String type = mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE));
         if (type.equalsIgnoreCase("alert")) {
             viewHolder.time.setText(timeFormat.format(mCursor.getLong(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME))));
@@ -105,10 +141,35 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
 
     }
 
-    public int getItemCount() {
-        mCursor = database.getAllItems();
-        return mCursor.getCount();
+    // short click listener for viewing notes/alerts
+ /*   class reminderClickListener implements View.OnClickListener {
+        public void onClick(View view) {
+            Log.d("CLICKED", "CLICKED");
+            int position = mRecyclerView.getChildAdapterPosition(view);
+            mCursor.moveToPosition(position);
+            Intent intent;
+            String type = mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE));
+            if (type.equalsIgnoreCase("alert")) {
+                intent = new Intent(mContext, createOrEditAlert.class);
+            } else {
+                intent = new Intent(mContext, createOrEditNote.class);
+            }
+            intent.putExtra("ID", mCursor.getInt(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_ID)));
+            mContext.startActivity(intent);
+        }
     }
+    */
+
+  /*  class reminderLongClickListener implements View.OnLongClickListener {
+
+        public boolean onLongClick(View view) {
+            int position = mRecyclerView.getChildAdapterPosition(view);
+            mCursor.moveToPosition(position);
+            int id = mCursor.getInt(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_ID));
+            deleteDialog(id, position).show();
+            return true;
+        }
+    } */
 
     private AlertDialog deleteDialog(int id, final int position) {
         final int deleteId = id;
@@ -157,32 +218,24 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
 
     }
 
-    // short click listener for viewing notes/alerts
-    class reminderClickListener implements View.OnClickListener {
-        public void onClick(View view) {
-            int position = mRecyclerView.getChildAdapterPosition(view);
-            mCursor.moveToPosition(position);
-            Intent intent;
-            String type = mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE));
-            if (type.equalsIgnoreCase("alert")) {
-                intent = new Intent(mContext, createOrEditAlert.class);
-            } else {
-                intent = new Intent(mContext, createOrEditNote.class);
-            }
-            intent.putExtra("ID", mCursor.getInt(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_ID)));
-            mContext.startActivity(intent);
+    public int getItemCount() {
+        mCursor = database.getAllItems();
+        return mCursor.getCount();
+    }
+    private class deleteItem {
+        private int id, position;
+        public deleteItem(int id, int position){
+            this.id = id;
+            this.position = position;
+        }
+        public int getID(){
+            return id;
+        }
+        public int getPos(){
+            return position;
         }
     }
 
-    class reminderLongClickListener implements View.OnLongClickListener {
-        public boolean onLongClick(View view) {
-            int position = mRecyclerView.getChildAdapterPosition(view);
-            mCursor.moveToPosition(position);
-            int id = mCursor.getInt(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_ID));
-            deleteDialog(id, position).show();
-            return true;
-        }
-    }
 
 }
 
