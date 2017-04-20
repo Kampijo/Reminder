@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
-
 public class MainActivity extends AppCompatActivity {
 
     private reminderDatabase database;
