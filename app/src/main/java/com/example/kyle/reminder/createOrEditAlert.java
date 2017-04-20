@@ -299,7 +299,7 @@ public class createOrEditAlert extends AppCompatActivity {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
-                        // set label to selectors repeat mode
+                        // set label to selected repeat mode
                         item3.put("subtext", repeatModes[repeatMode]);
                         adapter.notifyDataSetChanged();
                         dialog.dismiss();

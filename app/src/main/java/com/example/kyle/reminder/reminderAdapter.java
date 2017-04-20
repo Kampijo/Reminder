@@ -188,9 +188,6 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
                             Cursor cursor = database.getItem(id);
                             cursor.moveToFirst();
 
-                            // remove the soon to be deleted view from RecyclerView and notify
-                            mRecyclerView.removeViewAt(position);
-
                             // if the selectors item for deletion is an alert, cancel the alarm
                             if ((cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE)).equals("alert"))) {
                                 Intent delete = new Intent(mContext, AlarmService.class);
