@@ -3,33 +3,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.kyle.reminder.createOrEditAlert">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:id="@+id/alertTitle"
-        android:hint="@string/titleHint"
-        android:gravity="start"
-        android:layout_gravity="top"
-        android:inputType="textPersonName" />
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="170dp"
-        android:layout_below="@id/alertTitle"
-        android:id="@+id/alertContent"
-        android:inputType="textMultiLine"
-        android:gravity="start"
-        android:hint="@string/reminderHint" />
-
-    <ListView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/alertSettings"
-        android:layout_below="@+id/alertContent" />
+        android:orientation="vertical">
+
+        <include layout="@layout/tool_bar"></include>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/alertTitle"
+                android:hint="@string/titleHint"
+                android:gravity="start"
+                android:layout_gravity="top"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="170dp"
+                android:layout_below="@id/alertTitle"
+                android:id="@+id/alertContent"
+                android:inputType="textMultiLine"
+                android:gravity="start"
+                android:hint="@string/reminderHint" />
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/alertSettings"
+                android:layout_below="@+id/alertContent" />
+        </RelativeLayout>
+    </LinearLayout>
 
 </RelativeLayout>

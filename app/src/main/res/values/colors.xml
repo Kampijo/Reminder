@@ -3,4 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#ECEFF1</color>
+    <color name="drawerText">#424242</color>
+    <color name="FABNormal">#E91E63</color>
+    <color name="FABRipple">#F06292</color>
 </resources>

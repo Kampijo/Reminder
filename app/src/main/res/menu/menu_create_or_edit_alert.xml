@@ -6,6 +6,4 @@
         android:icon="@drawable/ic_delete_white_48dp"
         android:title="@string/delete"
         app:showAsAction="always"   />
-
-
 </menu>

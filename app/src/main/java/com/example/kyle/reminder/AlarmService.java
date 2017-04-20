@@ -69,13 +69,14 @@ public class AlarmService extends IntentService {
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(id);
 
+            // if deleted from the main screen, then broadcast refresh signal
             if (deletedFromMain) {
                 Intent refresh = new Intent("REFRESH");
                 LocalBroadcastManager.getInstance(this).sendBroadcast(refresh);
+                // otherwise, send deleted signal to exit alert detail screen
             } else {
                 LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("DELETED"));
             }
-
 
         } else if (CANCEL.equals(action)) {
             alarm.cancel(pendingIntent);
