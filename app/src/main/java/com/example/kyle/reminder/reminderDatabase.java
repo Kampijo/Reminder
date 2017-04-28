@@ -107,24 +107,30 @@ public class reminderDatabase extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + DB_TABLE_NAME + " ORDER BY " + DB_COLUMN_ID + " DESC", null);
     }
-    public Cursor getAllAlerts(){
-	SQLiteDatabase db = this.getReadableDatabase();
-	return db.rawQuery("SELECT * FROM " + DB_TABLE_NAME + " WHERE " +
-			DB_COLUMN_TYPE + " = ? ", new String[]{"alert"});
+
+    public Cursor getAllAlerts() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + DB_TABLE_NAME + " WHERE " +
+                DB_COLUMN_TYPE + " = ? ", new String[]{"alert"});
     }
-    public Cursor getAllNotes(){
-	SQLiteDatabase db = this.getReadableDatabase();
-	return db.rawQuery("SELECT * FROM " + DB_TABLE_NAME + " WHERE " +
-			DB_COLUMN_TYPE + " = ? ", new String[]{"note"});
+
+    public Cursor getAllNotes() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + DB_TABLE_NAME + " WHERE " +
+                DB_COLUMN_TYPE + " = ? ", new String[]{"note"});
     }
+
     public Integer deleteItem(Integer id) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(DB_TABLE_NAME, DB_COLUMN_ID + " = ? ",
                 new String[]{Integer.toString(id)});
     }
 
-    public boolean isEmpty() {
-        return getAllItems().getCount() == 0;
+    public boolean isEmpty(String type) {
+
+        if (type.equals("All")) return getAllItems().getCount() == 0;
+        else if (type.equals("Alerts")) return getAllAlerts().getCount() == 0;
+        else return getAllNotes().getCount() == 0;
     }
 
 }

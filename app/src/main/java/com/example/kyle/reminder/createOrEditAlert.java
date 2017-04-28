@@ -13,6 +13,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,10 +39,11 @@ public class createOrEditAlert extends AppCompatActivity {
     private EditText content, title;
     private String time, date;
     private int id, repeatMode;
-    private Map<String, String> item1, item2, item3;
-    private DateFormat df, df1;
+    private Map<String, String> alarmTime, alarmDate, alarmRepeat;
+    private DateFormat timeFormat, dateFormat;
     private Calendar alertTime;
     private String[] repeatModes;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +55,9 @@ public class createOrEditAlert extends AppCompatActivity {
         broadcastManager.registerReceiver(deleteReceiver, filter);
 
         List<Map<String, String>> mapList = new ArrayList<Map<String, String>>();
-        item1 = new HashMap<String, String>();
-        item2 = new HashMap<String, String>();
-        item3 = new HashMap<String, String>();
+        alarmTime = new HashMap<String, String>();
+        alarmDate = new HashMap<String, String>();
+        alarmRepeat = new HashMap<String, String>();
 
         database = new reminderDatabase(this);
         content = (EditText) findViewById(R.id.alertContent);
@@ -68,9 +70,11 @@ public class createOrEditAlert extends AppCompatActivity {
         id = intent.getIntExtra("ID", 0);
         alertTime = Calendar.getInstance();
 
+        toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        this.setSupportActionBar(toolbar);
 
-        df = new SimpleDateFormat("hh:mm aa");
-        df1 = new SimpleDateFormat("dd/MM/yy");
+        timeFormat = new SimpleDateFormat("hh:mm aa");
+        dateFormat = new SimpleDateFormat("dd/MM/yy");
 
         // If item exists, then set time and date list items to the time and date stored in alert
         if (id > 0) {
@@ -85,35 +89,35 @@ public class createOrEditAlert extends AppCompatActivity {
             long timeInMilliseconds = cursor.getLong(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME));
             repeatMode = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_FREQUENCY));
             alertTime.setTimeInMillis(timeInMilliseconds);
-            DateFormat df = new SimpleDateFormat("hh:mm aa");
-            DateFormat df1 = new SimpleDateFormat("dd/MM/yy");
+            DateFormat timeFormat = new SimpleDateFormat("hh:mm aa");
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
 
-            time = df.format(alertTime.getTime());
-            date = df1.format(alertTime.getTime());
+            time = timeFormat.format(alertTime.getTime());
+            date = dateFormat.format(alertTime.getTime());
             getSupportActionBar().setTitle("Edit Alert");
             cursor.close();
 
             // Otherwise, set time and date list items to system time
         } else {
             Calendar current = Calendar.getInstance();
-            time = df.format(current.getTime());
-            date = df1.format(current.getTime());
+            time = timeFormat.format(current.getTime());
+            date = dateFormat.format(current.getTime());
             alertTime.setTimeInMillis(current.getTimeInMillis());
             getSupportActionBar().setTitle("Create Alert");
 
         }
 
-        item1.put("title", "Time");
-        item1.put("subtext", time);
-        item2.put("title", "Date");
-        item2.put("subtext", date);
-        item3.put("title", "Repeat");
-        item3.put("subtext", repeatModes[repeatMode]);
+        alarmTime.put("title", "Time");
+        alarmTime.put("subtext", time);
+        alarmDate.put("title", "Date");
+        alarmDate.put("subtext", date);
+        alarmRepeat.put("title", "Repeat");
+        alarmRepeat.put("subtext", repeatModes[repeatMode]);
 
 
-        mapList.add(item1);
-        mapList.add(item2);
-        mapList.add(item3);
+        mapList.add(alarmTime);
+        mapList.add(alarmDate);
+        mapList.add(alarmRepeat);
         adapter = new SimpleAdapter(this, mapList, android.R.layout.simple_list_item_2,
                 new String[]{"title", "subtext"}, new int[]{android.R.id.text1, android.R.id.text2});
         ListView listView = (ListView) findViewById(R.id.alertSettings);
@@ -136,8 +140,6 @@ public class createOrEditAlert extends AppCompatActivity {
 
             }
         });
-
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
@@ -182,8 +184,8 @@ public class createOrEditAlert extends AppCompatActivity {
                         alertTime.set(Calendar.HOUR_OF_DAY, hour);
                         alertTime.set(Calendar.MINUTE, minute);
                         alertTime.set(Calendar.SECOND, 0);
-                        time = df.format(alertTime.getTime());
-                        item1.put("subtext", time);
+                        time = timeFormat.format(alertTime.getTime());
+                        alarmTime.put("subtext", time);
                         adapter.notifyDataSetChanged();
                     }
                 }, alertTime.get(Calendar.HOUR_OF_DAY), alertTime.get(Calendar.MINUTE), false);
@@ -198,8 +200,8 @@ public class createOrEditAlert extends AppCompatActivity {
                         alertTime.set(Calendar.YEAR, year);
                         alertTime.set(Calendar.MONTH, month);
                         alertTime.set(Calendar.DAY_OF_MONTH, day);
-                        date = df1.format(alertTime.getTime());
-                        item2.put("subtext", date);
+                        date = dateFormat.format(alertTime.getTime());
+                        alarmDate.put("subtext", date);
                         adapter.notifyDataSetChanged();
                     }
                 }, alertTime.get(Calendar.YEAR), alertTime.get(Calendar.MONTH), alertTime.get(Calendar.DAY_OF_MONTH));
@@ -300,7 +302,7 @@ public class createOrEditAlert extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
                         // set label to selected repeat mode
-                        item3.put("subtext", repeatModes[repeatMode]);
+                        alarmRepeat.put("subtext", repeatModes[repeatMode]);
                         adapter.notifyDataSetChanged();
                         dialog.dismiss();
                     }

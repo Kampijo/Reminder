@@ -10,7 +10,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,8 +35,6 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
     private Cursor mCursor;
     private reminderDatabase database;
     private RecyclerView mRecyclerView;
-    //public View.OnClickListener mListener = new reminderClickListener();
-    //public View.OnLongClickListener mLongListener = new reminderLongClickListener();
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm, MMM d ''yy");
 
     private MultiSelector multiSelector = new MultiSelector();
@@ -47,7 +44,7 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
         @Override
         public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
             super.onCreateActionMode(actionMode, menu);
-            ((Activity)mContext).getMenuInflater().inflate(R.menu.menu_main, menu);
+            ((Activity) mContext).getMenuInflater().inflate(R.menu.menu_main, menu);
             return true;
         }
 
@@ -60,14 +57,15 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
             }
             return false;
         }
+
         @Override
-        public void onDestroyActionMode(ActionMode actionMode){
+        public void onDestroyActionMode(ActionMode actionMode) {
             multiSelector.clearSelections();
             multiSelector.setSelectable(false);
         }
     };
 
-    public class ViewHolder extends SwappingHolder implements View.OnClickListener, View.OnLongClickListener{
+    public class ViewHolder extends SwappingHolder implements View.OnClickListener, View.OnLongClickListener {
         public TextView title;
         public TextView content;
         public TextView time;
@@ -85,8 +83,9 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
             icon = (ImageView) view.findViewById(R.id.icon);
 
         }
+
         @Override
-        public void onClick(View view){
+        public void onClick(View view) {
             // if not in selection mode, go to detail screen
             if (!multiSelector.tapSelection(ViewHolder.this)) {
                 int position = mRecyclerView.getChildAdapterPosition(view);
@@ -102,11 +101,11 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
                 mContext.startActivity(intent);
             }
         }
+
         @Override
-        public boolean onLongClick(View view){
+        public boolean onLongClick(View view) {
             if (!multiSelector.isSelectable()) {
                 ((AppCompatActivity) mContext).startSupportActionMode(mActionModeCallback);
-                Log.d("LONG CLICK", "LONG CLICKED");
                 multiSelector.setSelectable(true);
                 multiSelector.setSelected(ViewHolder.this, true);
                 return true;
@@ -122,27 +121,19 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
         database = new reminderDatabase(mContext);
     }
 
-    private Context getContext() {
-        return mContext;
-    }
-
     // inflating layout from XML and returning the holder
     @Override
     public reminderAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        if (database.isEmpty()) {
+        if (database.isEmpty("All")) {
             View emptyView = parent.findViewById(R.id.empty);
             return new ViewHolder(emptyView);
         } else {
 
             // Inflate the custom layout
             View reminderView = inflater.inflate(R.layout.list_item_layout, parent, false);
-
-            // set click listener for every view holder
-         //   reminderView.setOnClickListener(mListener);
-          //  reminderView.setOnLongClickListener(mLongListener);
 
             // Return a new holder
             ViewHolder viewHolder = new ViewHolder(reminderView);
@@ -157,7 +148,7 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
         String type = mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE));
         if (type.equalsIgnoreCase("alert")) {
             viewHolder.time.setText(timeFormat.format(mCursor.getLong(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME))));
-            viewHolder.icon.setImageResource(R.drawable.ic_bell_ring_grey600_18dp);
+            viewHolder.icon.setImageResource(R.drawable.ic_bell_ring_grey_18dp);
             viewHolder.time.setVisibility(View.VISIBLE);
             viewHolder.icon.setVisibility(View.VISIBLE);
         } else {
@@ -179,8 +170,7 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
 
                     public void onClick(DialogInterface dialog, int i) {
                         List<Integer> positions = multiSelector.getSelectedPositions();
-                        Log.d("POSITIONS", positions.toString());
-                        for(int j = 0; j < positions.size(); j++) {
+                        for (int j = 0; j < positions.size(); j++) {
                             int position = positions.get(j);
                             mCursor.moveToPosition(position);
                             int id = mCursor.getInt(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_ID));
@@ -195,7 +185,6 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
                                 delete.putExtra("deletedFromMain", true);
                                 delete.setAction(AlarmService.DELETE);
                                 mContext.startService(delete);
-
                                 // otherwise just delete note and notify adapter
                             } else {
                                 database.deleteItem(deleteId);
@@ -221,10 +210,8 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
     }
 
     public int getItemCount() {
-        mCursor = database.getAllItems();
         return mCursor.getCount();
     }
-
 
 }
 

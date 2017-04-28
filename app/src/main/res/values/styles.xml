@@ -9,6 +9,9 @@
         <item name="android:actionModeBackground">@color/colorPrimary</item>
         <item name="dialogTheme">@style/DialogTheme</item> <!-- TimePicker dialog -->
         <item name="alertDialogTheme">@style/DialogTheme</item> <!-- Alert dialog -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item> <!-- This is the important line -->
     </style>
 
     <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
