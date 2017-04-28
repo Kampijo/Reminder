@@ -126,8 +126,11 @@ public class reminderDatabase extends SQLiteOpenHelper {
                 new String[]{Integer.toString(id)});
     }
 
-    public boolean isEmpty() {
-        return getAllItems().getCount() == 0;
+    public boolean isEmpty(String type) {
+
+        if (type.equals("All")) return getAllItems().getCount() == 0;
+        else if (type.equals("Alerts")) return getAllAlerts().getCount() == 0;
+        else return getAllNotes().getCount() == 0;
     }
 
 }

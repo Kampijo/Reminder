@@ -12,28 +12,53 @@
 
         <include layout="@layout/tool_bar"></include>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="16dp">
+            android:padding="8dp"
+            android:orientation="vertical">
 
-            <EditText
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/note_title_card"
+                android:layout_gravity="center"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:id="@+id/noteTitle"
-                android:hint="@string/titleHint"
-                android:gravity="start"
-                android:layout_gravity="top"
-                android:inputType="textPersonName" />
+                android:layout_height="wrap_content"
+                card_view:cardCornerRadius="4dp"
+                card_view:cardUseCompatPadding="true"
+                card_view:contentPadding="4dp">
 
-            <EditText
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/title_height"
+                    android:id="@+id/noteTitle"
+                    android:hint="@string/titleHint"
+                    android:gravity="start"
+                    android:layout_gravity="top"
+                    android:inputType="textPersonName"
+                    android:background="@null"
+                    android:padding="4dp" />
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/note_content_card"
+                android:layout_gravity="center"
                 android:layout_width="match_parent"
-                android:layout_below="@id/noteTitle"
                 android:layout_height="match_parent"
-                android:id="@+id/noteContent"
-                android:hint="@string/reminderHint"
-                android:gravity="start" />
-        </RelativeLayout>
+                card_view:cardCornerRadius="4dp"
+                card_view:cardUseCompatPadding="true"
+                card_view:contentPadding="4dp">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_below="@id/noteTitle"
+                    android:layout_height="match_parent"
+                    android:id="@+id/noteContent"
+                    android:hint="@string/reminderHint"
+                    android:gravity="start"
+                    android:background="@null"
+                    android:padding="4dp" />
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
 

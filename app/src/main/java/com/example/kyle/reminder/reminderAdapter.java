@@ -10,7 +10,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -107,7 +106,6 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
         public boolean onLongClick(View view) {
             if (!multiSelector.isSelectable()) {
                 ((AppCompatActivity) mContext).startSupportActionMode(mActionModeCallback);
-                Log.d("LONG CLICK", "LONG CLICKED");
                 multiSelector.setSelectable(true);
                 multiSelector.setSelected(ViewHolder.this, true);
                 return true;
@@ -129,7 +127,7 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        if (database.isEmpty()) {
+        if (database.isEmpty("All")) {
             View emptyView = parent.findViewById(R.id.empty);
             return new ViewHolder(emptyView);
         } else {
@@ -172,7 +170,6 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
 
                     public void onClick(DialogInterface dialog, int i) {
                         List<Integer> positions = multiSelector.getSelectedPositions();
-                        Log.d("POSITIONS", positions.toString());
                         for (int j = 0; j < positions.size(); j++) {
                             int position = positions.get(j);
                             mCursor.moveToPosition(position);
@@ -188,7 +185,6 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
                                 delete.putExtra("deletedFromMain", true);
                                 delete.setAction(AlarmService.DELETE);
                                 mContext.startService(delete);
-
                                 // otherwise just delete note and notify adapter
                             } else {
                                 database.deleteItem(deleteId);
@@ -214,7 +210,6 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
     }
 
     public int getItemCount() {
-        mCursor = database.getAllItems();
         return mCursor.getCount();
     }
 

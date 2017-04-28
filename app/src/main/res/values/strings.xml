@@ -2,12 +2,8 @@
     <string name="app_name">Reminder</string>
     <string name="titleHint">Title</string>
     <string name="reminderHint">Enter a reminder...</string>
-    <string name="addNote">Add Note</string>
-    <string name="addAlert">Add Alert</string>
     <string name="delete">Delete</string>
-    <string name="settings">Settings</string>
     <string name="empty">No items.</string>
-    <string name="textLimit">9</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
@@ -18,10 +14,4 @@
     <string name="nav_settings">Settings</string>
 
     <!-- Toolbar titles when navigation menu item is selected -->
-    <string-array name="nav_item_activity_titles">
-        <item>Home</item>
-        <item>Alerts</item>
-        <item>Notes</item>
-        <item>Settings</item>
-    </string-array>
 </resources>

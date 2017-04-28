@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -16,6 +17,7 @@ public class createOrEditNote extends AppCompatActivity {
     private EditText title, content;
     private reminderDatabase database;
     private int id = 0;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +31,9 @@ public class createOrEditNote extends AppCompatActivity {
 
         content = (EditText) findViewById(R.id.noteContent);
         title = (EditText) findViewById(R.id.noteTitle);
+
+        toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        this.setSupportActionBar(toolbar);
 
         if (id > 0) {
             Cursor cursor = database.getItem(id);
