@@ -10,6 +10,8 @@ Notification alerts.
 ![](http://i.imgur.com/ALpfiXel.png) ![](http://i.imgur.com/tCMZdNjl.png)
 ![](http://i.imgur.com/5QzZJTWl.png) ![](http://i.imgur.com/KPW91sNl.png)
 
+NOTE: Screenshots outdated, not reflective of current state of the app.
+
 
 # Changelog
 ~~No save feature as of yet. Will get to it when I have the time.~~
@@ -21,6 +23,10 @@ Save feature has been added.
 ~~However, alarm has not been implemented to alert as of yet.~~
 
 Alert feature, with working alarm notification has been implemented.
+
+Navigation Drawer added that categorizes items.
+
+Made dialog colours more consistent with theme.
 
 # TO-DO
 Improve the UI <br/>
