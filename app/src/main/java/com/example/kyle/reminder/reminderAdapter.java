@@ -33,48 +33,23 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
 
     private Context mContext;
     private Cursor mCursor;
-    private reminderDatabase database;
-    private RecyclerView mRecyclerView;
+    private reminderDatabase mDatabase;
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm, MMM d ''yy");
 
-    private MultiSelector multiSelector = new MultiSelector();
+    private MultiSelector mMultiSelector;
+    private ModalMultiSelectorCallback mActionModeCallback;
+    private MainFragment.EditListener mEditListener;
 
-    private ModalMultiSelectorCallback mActionModeCallback
-            = new ModalMultiSelectorCallback(multiSelector) {
-        @Override
-        public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-            super.onCreateActionMode(actionMode, menu);
-            ((Activity) mContext).getMenuInflater().inflate(R.menu.menu_main, menu);
-            return true;
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-            if (menuItem.getItemId() == R.id.action_del_item) {
-                // delete the items
-                deleteDialog(actionMode).show();
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode actionMode) {
-            multiSelector.clearSelections();
-            multiSelector.setSelectable(false);
-        }
-    };
-
-    public class ViewHolder extends SwappingHolder implements View.OnClickListener, View.OnLongClickListener {
+    public class ViewHolder extends SwappingHolder implements View.OnClickListener,
+            View.OnLongClickListener {
         public TextView title;
         public TextView content;
         public TextView time;
         public ImageView icon;
 
-
         public ViewHolder(View view) {
 
-            super(view, multiSelector);
+            super(view, mMultiSelector);
             view.setOnClickListener(this);
             view.setOnLongClickListener(this);
             title = (TextView) view.findViewById(R.id.title);
@@ -87,38 +62,27 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
         @Override
         public void onClick(View view) {
             // if not in selection mode, go to detail screen
-            if (!multiSelector.tapSelection(ViewHolder.this)) {
-                int position = mRecyclerView.getChildAdapterPosition(view);
-                mCursor.moveToPosition(position);
-                Intent intent;
-                String type = mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE));
-                if (type.equalsIgnoreCase("alert")) {
-                    intent = new Intent(mContext, createOrEditAlert.class);
-                } else {
-                    intent = new Intent(mContext, createOrEditNote.class);
-                }
-                intent.putExtra("ID", mCursor.getInt(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_ID)));
-                mContext.startActivity(intent);
+            if (!mMultiSelector.tapSelection(ViewHolder.this)) {
+               mEditListener.startEditActivity(view);
             }
         }
 
         @Override
         public boolean onLongClick(View view) {
-            if (!multiSelector.isSelectable()) {
+            if (!mMultiSelector.isSelectable()) {
                 ((AppCompatActivity) mContext).startSupportActionMode(mActionModeCallback);
-                multiSelector.setSelectable(true);
-                multiSelector.setSelected(ViewHolder.this, true);
+                mMultiSelector.setSelectable(true);
+                mMultiSelector.setSelected(ViewHolder.this, true);
                 return true;
             }
             return false;
         }
     }
 
-    public reminderAdapter(Context context, Cursor cursor, RecyclerView recyclerView) {
+    public reminderAdapter(Context context, Cursor cursor) {
         mContext = context;
         mCursor = cursor;
-        mRecyclerView = recyclerView;
-        database = new reminderDatabase(mContext);
+        mDatabase = new reminderDatabase(mContext);
     }
 
     // inflating layout from XML and returning the holder
@@ -127,7 +91,7 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        if (database.isEmpty("All")) {
+        if (mDatabase.isEmpty("All")) {
             View emptyView = parent.findViewById(R.id.empty);
             return new ViewHolder(emptyView);
         } else {
@@ -160,57 +124,21 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
         viewHolder.setSelectionModeBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.selectors, null));
     }
 
-    private AlertDialog deleteDialog(final ActionMode actionMode) {
-
-        return new AlertDialog.Builder(mContext)
-                .setTitle("Confirm")
-                .setMessage("Do you want to delete?")
-
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int i) {
-                        List<Integer> positions = multiSelector.getSelectedPositions();
-                        for (int j = 0; j < positions.size(); j++) {
-                            int position = positions.get(j);
-                            mCursor.moveToPosition(position);
-                            int id = mCursor.getInt(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_ID));
-                            int deleteId = id;
-                            Cursor cursor = database.getItem(id);
-                            cursor.moveToFirst();
-
-                            // if the selectors item for deletion is an alert, cancel the alarm
-                            if ((cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE)).equals("alert"))) {
-                                Intent delete = new Intent(mContext, AlarmService.class);
-                                delete.putExtra("id", deleteId);
-                                delete.putExtra("deletedFromMain", true);
-                                delete.setAction(AlarmService.DELETE);
-                                mContext.startService(delete);
-                                // otherwise just delete note and notify adapter
-                            } else {
-                                database.deleteItem(deleteId);
-                            }
-                        }
-                        // sends refresh signal to Main UI
-                        Intent refresh = new Intent("REFRESH");
-                        LocalBroadcastManager.getInstance(mContext).sendBroadcast(refresh);
-                        dialog.dismiss();
-                        actionMode.finish();
-                        multiSelector.clearSelections();
-                    }
-
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int i) {
-                        dialog.dismiss();
-
-                    }
-                })
-                .create();
-
-    }
 
     public int getItemCount() {
         return mCursor.getCount();
+    }
+
+    public void setMultiSelector(MultiSelector l){
+        mMultiSelector = l;
+    }
+
+    public void setModalMultiSelectorCallback(ModalMultiSelectorCallback l){
+        mActionModeCallback = l;
+    }
+
+    public void setEditListener(MainFragment.EditListener l){
+        mEditListener = l;
     }
 
 }
