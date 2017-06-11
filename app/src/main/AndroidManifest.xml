@@ -42,6 +42,15 @@
                   android:enabled="true"> </receiver>
         <service android:name=".AlarmService"
                  android:enabled="true"></service>
+        <provider
+            android:name=".reminderContentProvider"
+            android:authorities="com.example.kyle.reminder"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:label="LentItemsProvider"
+            android:readPermission="com.example.kyle.reminder.READ"
+            android:writePermission="com.example.kyle.reminder.WRITE" />
     </application>
+
 
 </manifest>

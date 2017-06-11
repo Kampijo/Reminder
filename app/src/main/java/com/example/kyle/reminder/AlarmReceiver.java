@@ -27,13 +27,13 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         String title = intent.getStringExtra("title");
         String msg = intent.getStringExtra("msg");
 
-        reminderDatabase database = new reminderDatabase(context);
+        reminderDataHelper database = new reminderDataHelper(context);
         Cursor cursor = database.getItem(id);
         cursor.moveToFirst();
 
-        int frequency = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_FREQUENCY));
+        int frequency = cursor.getInt(cursor.getColumnIndex(reminderDataHelper.DB_COLUMN_FREQUENCY));
         Calendar time = Calendar.getInstance();
-        time.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME)));
+        time.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(reminderDataHelper.DB_COLUMN_TIME)));
 
         if (frequency > 0) {
             if (frequency == HOURLY) {

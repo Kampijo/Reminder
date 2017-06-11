@@ -1,6 +1,5 @@
 package com.example.kyle.reminder;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,7 +10,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -35,7 +33,7 @@ import java.util.List;
 
 public class MainFragment extends Fragment {
 
-    private reminderDatabase database;
+    private reminderDataHelper database;
     private TextView empty;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -88,13 +86,13 @@ public class MainFragment extends Fragment {
                 int position = mRecyclerView.getChildAdapterPosition(v);
                 mCursor.moveToPosition(position);
                 Intent intent;
-                String type = mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE));
+                String type = mCursor.getString(mCursor.getColumnIndex(reminderDataHelper.DB_COLUMN_TYPE));
                 if (type.equalsIgnoreCase("alert")) {
                     intent = new Intent(getContext(), createOrEditAlert.class);
                 } else {
                     intent = new Intent(getContext(), createOrEditNote.class);
                 }
-                intent.putExtra("ID", mCursor.getInt(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_ID)));
+                intent.putExtra("ID", mCursor.getInt(mCursor.getColumnIndex(reminderDataHelper.DB_COLUMN_ID)));
                 getContext().startActivity(intent);
 
             }
@@ -111,7 +109,7 @@ public class MainFragment extends Fragment {
 
     public void onStart() {
         super.onStart();
-        database = new reminderDatabase(getContext());
+        database = new reminderDataHelper(getContext());
         type = getArguments().getString("Type");
         final Cursor cursor = getCursor(type);
         mCursor = cursor;
@@ -200,13 +198,13 @@ public class MainFragment extends Fragment {
                         for (int j = 0; j < positions.size(); j++) {
                             int position = positions.get(j);
                             mCursor.moveToPosition(position);
-                            int id = mCursor.getInt(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_ID));
+                            int id = mCursor.getInt(mCursor.getColumnIndex(reminderDataHelper.DB_COLUMN_ID));
                             int deleteId = id;
                             Cursor cursor = database.getItem(id);
                             cursor.moveToFirst();
 
                             // if the selectors item for deletion is an alert, cancel the alarm
-                            if ((cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE)).equals("alert"))) {
+                            if ((cursor.getString(cursor.getColumnIndex(reminderDataHelper.DB_COLUMN_TYPE)).equals("alert"))) {
                                 Intent delete = new Intent(getContext(), AlarmService.class);
                                 delete.putExtra("id", deleteId);
                                 delete.putExtra("deletedFromMain", true);

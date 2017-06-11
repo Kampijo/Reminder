@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  *
  * SQLite database for storing notes/alerts
  */
-public class reminderDatabase extends SQLiteOpenHelper {
+public class reminderDataHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "reminderData.db";
     private static final int DATABASE_VERSION = 1;
@@ -23,7 +23,7 @@ public class reminderDatabase extends SQLiteOpenHelper {
     public static final String DB_COLUMN_TIME = "time";
     public static final String DB_COLUMN_FREQUENCY = "frequency";
 
-    public reminderDatabase(Context context) {
+    public reminderDataHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

@@ -1,18 +1,10 @@
 package com.example.kyle.reminder;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -23,7 +15,6 @@ import com.bignerdranch.android.multiselector.MultiSelector;
 import com.bignerdranch.android.multiselector.SwappingHolder;
 
 import java.text.SimpleDateFormat;
-import java.util.List;
 
 /**
  * Created by kyle on 22/09/16.
@@ -33,7 +24,7 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
 
     private Context mContext;
     private Cursor mCursor;
-    private reminderDatabase mDatabase;
+    private reminderDataHelper mDatabase;
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm, MMM d ''yy");
 
     private MultiSelector mMultiSelector;
@@ -82,7 +73,7 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
     public reminderAdapter(Context context, Cursor cursor) {
         mContext = context;
         mCursor = cursor;
-        mDatabase = new reminderDatabase(mContext);
+        mDatabase = new reminderDataHelper(mContext);
     }
 
     // inflating layout from XML and returning the holder
@@ -109,9 +100,9 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
     @Override
     public void onBindViewHolder(reminderAdapter.ViewHolder viewHolder, int position) {
         mCursor.moveToPosition(position);
-        String type = mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TYPE));
+        String type = mCursor.getString(mCursor.getColumnIndex(reminderDataHelper.DB_COLUMN_TYPE));
         if (type.equalsIgnoreCase("alert")) {
-            viewHolder.time.setText(timeFormat.format(mCursor.getLong(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME))));
+            viewHolder.time.setText(timeFormat.format(mCursor.getLong(mCursor.getColumnIndex(reminderDataHelper.DB_COLUMN_TIME))));
             viewHolder.icon.setImageResource(R.drawable.ic_bell_ring_grey_18dp);
             viewHolder.time.setVisibility(View.VISIBLE);
             viewHolder.icon.setVisibility(View.VISIBLE);
@@ -119,8 +110,8 @@ public class reminderAdapter extends RecyclerView.Adapter<reminderAdapter.ViewHo
             viewHolder.time.setVisibility(View.GONE);
             viewHolder.icon.setVisibility(View.GONE);
         }
-        viewHolder.title.setText(mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_TITLE)));
-        viewHolder.content.setText(mCursor.getString(mCursor.getColumnIndex(reminderDatabase.DB_COLUMN_CONTENT)));
+        viewHolder.title.setText(mCursor.getString(mCursor.getColumnIndex(reminderDataHelper.DB_COLUMN_TITLE)));
+        viewHolder.content.setText(mCursor.getString(mCursor.getColumnIndex(reminderDataHelper.DB_COLUMN_CONTENT)));
         viewHolder.setSelectionModeBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.selectors, null));
     }
 

@@ -35,7 +35,7 @@ import java.util.Map;
 public class createOrEditAlert extends AppCompatActivity {
 
     private SimpleAdapter adapter;
-    private reminderDatabase database;
+    private reminderDataHelper database;
     private EditText content, title;
     private String time, date;
     private int id, repeatMode;
@@ -59,7 +59,7 @@ public class createOrEditAlert extends AppCompatActivity {
         alarmDate = new HashMap<String, String>();
         alarmRepeat = new HashMap<String, String>();
 
-        database = new reminderDatabase(this);
+        database = new reminderDataHelper(this);
         content = (EditText) findViewById(R.id.alertContent);
         title = (EditText) findViewById(R.id.alertTitle);
 
@@ -81,13 +81,13 @@ public class createOrEditAlert extends AppCompatActivity {
             Cursor cursor = database.getItem(id);
             cursor.moveToFirst();
             String contentString = cursor.getString(cursor.getColumnIndex
-                    (reminderDatabase.DB_COLUMN_CONTENT));
-            String titleString = cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TITLE));
+                    (reminderDataHelper.DB_COLUMN_CONTENT));
+            String titleString = cursor.getString(cursor.getColumnIndex(reminderDataHelper.DB_COLUMN_TITLE));
             content.setText(contentString);
             title.setText(titleString);
 
-            long timeInMilliseconds = cursor.getLong(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TIME));
-            repeatMode = cursor.getInt(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_FREQUENCY));
+            long timeInMilliseconds = cursor.getLong(cursor.getColumnIndex(reminderDataHelper.DB_COLUMN_TIME));
+            repeatMode = cursor.getInt(cursor.getColumnIndex(reminderDataHelper.DB_COLUMN_FREQUENCY));
             alertTime.setTimeInMillis(timeInMilliseconds);
             DateFormat timeFormat = new SimpleDateFormat("hh:mm aa");
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");

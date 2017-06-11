@@ -1,8 +1,12 @@
 package com.example.kyle.reminder;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
@@ -15,16 +19,18 @@ import android.widget.EditText;
 
 public class createOrEditNote extends AppCompatActivity {
     private EditText title, content;
-    private reminderDatabase database;
+    private reminderDataHelper database;
     private int id = 0;
     private Toolbar toolbar;
+    private ContentResolver contentResolver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_or_edit_note);
-        database = new reminderDatabase(this);
+        database = new reminderDataHelper(this);
+        contentResolver = getContentResolver();
 
         Intent intent = getIntent();
         id = intent.getIntExtra("ID", 0);
@@ -38,8 +44,8 @@ public class createOrEditNote extends AppCompatActivity {
         if (id > 0) {
             Cursor cursor = database.getItem(id);
             cursor.moveToFirst();
-            String contentString = cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_CONTENT));
-            String titleString = cursor.getString(cursor.getColumnIndex(reminderDatabase.DB_COLUMN_TITLE));
+            String contentString = cursor.getString(cursor.getColumnIndex(reminderDataHelper.DB_COLUMN_CONTENT));
+            String titleString = cursor.getString(cursor.getColumnIndex(reminderDataHelper.DB_COLUMN_TITLE));
             content.setText(contentString);
             title.setText(titleString);
             getSupportActionBar().setTitle("Edit Note");
@@ -107,7 +113,7 @@ public class createOrEditNote extends AppCompatActivity {
 
     }
 
-    private AlertDialog saveDialog(int id, String title, String content) {
+    private AlertDialog saveDialog(int id, String title, final String content) {
         final int saveId = id;
         final String saveMessage = content;
         final String saveTitle = title;
@@ -121,9 +127,19 @@ public class createOrEditNote extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //if note exists, update. Otherwise insert new note.
                         if (saveId > 0) {
-                            database.updateNote(saveId, saveTitle, saveMessage);
+                            ContentValues values = new ContentValues();
+                            values.put(reminderContract.Notes.TITLE, saveTitle);
+                            values.put(reminderContract.Notes.CONTENT, saveMessage);
+                            Uri uri = ContentUris.withAppendedId(reminderContract.Notes.CONTENT_URI,
+                                    saveId);
+                            contentResolver.update(uri, values, null, null);
+                            //database.updateNote(saveId, saveTitle, saveMessage);
                         } else {
-                            database.insertNote(saveTitle, saveMessage);
+                            ContentValues values = new ContentValues();
+                            values.put(reminderContract.Notes.TYPE, reminderContract.PATH_NOTE);
+                            values.put(reminderContract.Notes.TITLE, saveTitle);
+                            values.put(reminderContract.Notes.CONTENT, saveMessage);
+                            contentResolver.insert(reminderContract.Notes.CONTENT_URI, values);
                         }
                         terminateActivity();
                         database.close();

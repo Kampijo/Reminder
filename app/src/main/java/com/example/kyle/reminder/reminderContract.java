@@ -10,24 +10,28 @@ import android.provider.BaseColumns;
 
 public final class reminderContract {
     /**
-     * The authority of the lentitems provider.
+     * The authority of the provider.
      */
     public static final String AUTHORITY =
             "com.example.kyle.reminder";
     /**
      * The content URI for the top-level
-     * lentitems authority.
+     * authority.
      */
     public static final Uri BASE_CONTENT_URI =
             Uri.parse("content://" + AUTHORITY);
 
-    public static final String PATH_NOTE = "notes";
-    public static final String PATH_NOTE_ID = "notes/#";
-    public static final String PATH_ALERT = "alerts";
-    public static final String PATH_ALERT_ID = "alerts/#";
+    public static final String PATH_NOTE = "note";
+    public static final String PATH_NOTE_ID = "note/#";
+    public static final String PATH_ALERT = "alert";
+    public static final String PATH_ALERT_ID = "alert/#";
 
     public static final class Notes implements BaseColumns {
         public static final String TABLE_NAME = "reminders";
+        public static final String _ID = "_id";
+        public static final String TYPE = "type";
+        public static final String TITLE = "title";
+        public static final String CONTENT = "content";
 
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_NOTE).build();
@@ -44,6 +48,12 @@ public final class reminderContract {
 
     public static final class Alerts implements BaseColumns {
         public static final String TABLE_NAME = "reminders";
+        public static final String _ID = "_id";
+        public static final String TYPE = "type";
+        public static final String TITLE = "title";
+        public static final String CONTENT = "content";
+        public static final String TIME = "time";
+        public static final String FREQUENCY = "frequency";
 
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_ALERT).build();
