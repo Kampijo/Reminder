@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 /**
  * Created by kyle on 05/09/16.
- * <p/>
+ *
  * SQLite database for storing notes/alerts
  */
 public class reminderDatabase extends SQLiteOpenHelper {
