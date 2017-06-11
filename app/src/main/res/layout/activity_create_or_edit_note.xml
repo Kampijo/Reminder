@@ -18,7 +18,8 @@
             android:padding="8dp"
             android:orientation="vertical">
 
-            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            <android.support.v7.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/note_title_card"
                 android:layout_gravity="center"
                 android:layout_width="match_parent"
@@ -39,7 +40,8 @@
                     android:padding="4dp" />
             </android.support.v7.widget.CardView>
 
-            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            <android.support.v7.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/note_content_card"
                 android:layout_gravity="center"
                 android:layout_width="match_parent"

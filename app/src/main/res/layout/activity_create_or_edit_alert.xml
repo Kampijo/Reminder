@@ -18,7 +18,8 @@
             android:padding="8dp"
             android:orientation="vertical">
 
-            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            <android.support.v7.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/alert_title_card"
                 android:layout_gravity="center"
                 android:layout_width="match_parent"
@@ -36,10 +37,11 @@
                     android:layout_gravity="top"
                     android:inputType="textPersonName"
                     android:background="@null"
-                    android:padding="4dp"/>
+                    android:padding="4dp" />
             </android.support.v7.widget.CardView>
 
-            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            <android.support.v7.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/alert_content_card"
                 android:layout_gravity="center"
                 android:layout_width="match_parent"
@@ -57,10 +59,11 @@
                     android:gravity="start"
                     android:hint="@string/reminderHint"
                     android:background="@null"
-                    android:padding="4dp"/>
+                    android:padding="4dp" />
             </android.support.v7.widget.CardView>
 
-            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            <android.support.v7.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/alert_settings_card"
                 android:layout_gravity="center"
                 android:layout_width="match_parent"

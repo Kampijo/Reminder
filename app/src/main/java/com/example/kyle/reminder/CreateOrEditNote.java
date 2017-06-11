@@ -18,154 +18,154 @@ import android.widget.EditText;
 
 
 public class CreateOrEditNote extends AppCompatActivity {
-    private EditText title, content;
-    private ReminderDataHelper database;
-    private int id = 0;
-    private Toolbar toolbar;
-    private ContentResolver contentResolver;
+  private EditText mTitle, mContent;
+  private int mID = 0;
+  private ContentResolver mContentResolver;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+  private static final String ID_KEY = "id";
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_or_edit_note);
-        database = new ReminderDataHelper(this);
-        contentResolver = getContentResolver();
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
 
-        Intent intent = getIntent();
-        id = intent.getIntExtra("ID", 0);
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_create_or_edit_note);
+    mContentResolver = getContentResolver();
 
-        content = (EditText) findViewById(R.id.noteContent);
-        title = (EditText) findViewById(R.id.noteTitle);
+    Intent intent = getIntent();
+    mID = intent.getIntExtra(ID_KEY, 0);
 
-        toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        this.setSupportActionBar(toolbar);
+    mContent = (EditText) findViewById(R.id.noteContent);
+    mTitle = (EditText) findViewById(R.id.noteTitle);
 
-        if (id > 0) {
-            Cursor cursor = database.getItem(id);
-            cursor.moveToFirst();
-            String contentString = cursor.getString(cursor.getColumnIndex(ReminderDataHelper.DB_COLUMN_CONTENT));
-            String titleString = cursor.getString(cursor.getColumnIndex(ReminderDataHelper.DB_COLUMN_TITLE));
-            content.setText(contentString);
-            title.setText(titleString);
-            getSupportActionBar().setTitle("Edit Note");
-        } else {
-            getSupportActionBar().setTitle("Create Note");
-        }
+    Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+    this.setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    if (mID > 0) {
+      Uri uri = ContentUris.withAppendedId(ReminderContract.Notes.CONTENT_URI,
+              mID);
+      Cursor cursor = mContentResolver.query(uri, null, null, null, null);
+      cursor.moveToFirst();
+      String titleString = cursor.getString(cursor.getColumnIndex(ReminderContract.Notes.TITLE));
+      String contentString = cursor.getString(cursor.getColumnIndex(ReminderContract.Notes.CONTENT));
+      mContent.setText(contentString);
+      mTitle.setText(titleString);
+      getSupportActionBar().setTitle("Edit Note");
+    } else {
+      getSupportActionBar().setTitle("Create Note");
     }
 
-    @Override
-    public void onBackPressed() {
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+  }
+
+  @Override
+  public void onBackPressed() {
+    saveNote();
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.menu_create_or_edit_note, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+
+      case R.id.action_del_note:
+        deleteDialog(mID).show();
+        break;
+
+      case android.R.id.home:
         saveNote();
+        break;
+
+      default:
+        break;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_create_or_edit_note, menu);
-        return true;
-    }
+    return true;
+  }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+  private AlertDialog deleteDialog(int id) {
 
-            case R.id.action_del_note:
-                deleteDialog(id).show();
-                break;
+    final int deleteId = id;
 
-            case android.R.id.home:
-                saveNote();
-                break;
+    return new AlertDialog.Builder(this)
+            .setTitle("Confirm")
+            .setMessage("Do you want to delete?")
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
-            default:
-                break;
-        }
+              public void onClick(DialogInterface dialog, int i) {
+                if (deleteId > 0) {
+                  Uri uri = ContentUris.withAppendedId(ReminderContract.Notes.CONTENT_URI,
+                          deleteId);
+                  mContentResolver.delete(uri, null, null);
+                }
+                terminateActivity();
+              }
 
-        return true;
-    }
+            })
+            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int i) {
+                dialog.dismiss();
 
-    private AlertDialog deleteDialog(int id) {
+              }
+            })
+            .create();
 
-        final int deleteId = id;
+  }
 
-        return new AlertDialog.Builder(this)
-                .setTitle("Confirm")
-                .setMessage("Do you want to delete?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+  private AlertDialog saveDialog(int id, String title, final String content) {
+    final int saveId = id;
+    final String saveMessage = content;
+    final String saveTitle = title;
 
-                    public void onClick(DialogInterface dialog, int i) {
-                        if (deleteId > 0) {
-                            database.deleteItem(deleteId);
-                        }
-                        terminateActivity();
-                    }
+    return new AlertDialog.Builder(this)
 
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int i) {
-                        dialog.dismiss();
+            .setTitle("Confirm")
+            .setMessage("Do you want to save?")
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
-                    }
-                })
-                .create();
+              public void onClick(DialogInterface dialog, int whichButton) {
+                //if note exists, update. Otherwise insert new note.
+                if (saveId > 0) {
+                  ContentValues values = new ContentValues();
+                  values.put(ReminderContract.Notes.TITLE, saveTitle);
+                  values.put(ReminderContract.Notes.CONTENT, saveMessage);
+                  Uri uri = ContentUris.withAppendedId(ReminderContract.Notes.CONTENT_URI,
+                          saveId);
+                  mContentResolver.update(uri, values, null, null);
+                } else {
+                  ContentValues values = new ContentValues();
+                  values.put(ReminderContract.Notes.TYPE, ReminderContract.PATH_NOTE);
+                  values.put(ReminderContract.Notes.TITLE, saveTitle);
+                  values.put(ReminderContract.Notes.CONTENT, saveMessage);
+                  mContentResolver.insert(ReminderContract.Notes.CONTENT_URI, values);
+                }
+                terminateActivity();
+                dialog.dismiss();
+              }
 
-    }
+            })
+            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+                terminateActivity();
+                dialog.dismiss();
 
-    private AlertDialog saveDialog(int id, String title, final String content) {
-        final int saveId = id;
-        final String saveMessage = content;
-        final String saveTitle = title;
+              }
+            })
+            .create();
+  }
 
-        return new AlertDialog.Builder(this)
+  private void terminateActivity() {
+    NavUtils.navigateUpFromSameTask(this);
+  }
 
-                .setTitle("Confirm")
-                .setMessage("Do you want to save?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        //if note exists, update. Otherwise insert new note.
-                        if (saveId > 0) {
-                            ContentValues values = new ContentValues();
-                            values.put(ReminderContract.Notes.TITLE, saveTitle);
-                            values.put(ReminderContract.Notes.CONTENT, saveMessage);
-                            Uri uri = ContentUris.withAppendedId(ReminderContract.Notes.CONTENT_URI,
-                                    saveId);
-                            contentResolver.update(uri, values, null, null);
-                            //database.updateNote(saveId, saveTitle, saveMessage);
-                        } else {
-                            ContentValues values = new ContentValues();
-                            values.put(ReminderContract.Notes.TYPE, ReminderContract.PATH_NOTE);
-                            values.put(ReminderContract.Notes.TITLE, saveTitle);
-                            values.put(ReminderContract.Notes.CONTENT, saveMessage);
-                            contentResolver.insert(ReminderContract.Notes.CONTENT_URI, values);
-                        }
-                        terminateActivity();
-                        database.close();
-                        dialog.dismiss();
-                    }
-
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        terminateActivity();
-                        database.close();
-                        dialog.dismiss();
-
-                    }
-                })
-                .create();
-    }
-
-    private void terminateActivity() {
-        NavUtils.navigateUpFromSameTask(this);
-    }
-
-    private void saveNote() {
-        String contentString = content.getText().toString();
-        String titleString = title.getText().toString();
-        saveDialog(id, titleString, contentString).show();
-    }
+  private void saveNote() {
+    String contentString = mContent.getText().toString();
+    String titleString = mTitle.getText().toString();
+    saveDialog(mID, titleString, contentString).show();
+  }
 
 }
