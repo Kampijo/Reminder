@@ -33,7 +33,7 @@ Improve the UI <br/>
 General QOL changes
 
 # Acknowledgements
-[FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) by Dmytro Tarianyk. <br/>
+[FloatingActionButton](https://github.com/Clans/FloatingActionButton) by Clans. <br/>
 [RecyclerView-MultiSelect](https://github.com/bignerdranch/recyclerview-multiselect) by Big Nerd Ranch.
 
 
