@@ -17,9 +17,9 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 
-public class createOrEditNote extends AppCompatActivity {
+public class CreateOrEditNote extends AppCompatActivity {
     private EditText title, content;
-    private reminderDataHelper database;
+    private ReminderDataHelper database;
     private int id = 0;
     private Toolbar toolbar;
     private ContentResolver contentResolver;
@@ -29,7 +29,7 @@ public class createOrEditNote extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_or_edit_note);
-        database = new reminderDataHelper(this);
+        database = new ReminderDataHelper(this);
         contentResolver = getContentResolver();
 
         Intent intent = getIntent();
@@ -44,8 +44,8 @@ public class createOrEditNote extends AppCompatActivity {
         if (id > 0) {
             Cursor cursor = database.getItem(id);
             cursor.moveToFirst();
-            String contentString = cursor.getString(cursor.getColumnIndex(reminderDataHelper.DB_COLUMN_CONTENT));
-            String titleString = cursor.getString(cursor.getColumnIndex(reminderDataHelper.DB_COLUMN_TITLE));
+            String contentString = cursor.getString(cursor.getColumnIndex(ReminderDataHelper.DB_COLUMN_CONTENT));
+            String titleString = cursor.getString(cursor.getColumnIndex(ReminderDataHelper.DB_COLUMN_TITLE));
             content.setText(contentString);
             title.setText(titleString);
             getSupportActionBar().setTitle("Edit Note");
@@ -128,18 +128,18 @@ public class createOrEditNote extends AppCompatActivity {
                         //if note exists, update. Otherwise insert new note.
                         if (saveId > 0) {
                             ContentValues values = new ContentValues();
-                            values.put(reminderContract.Notes.TITLE, saveTitle);
-                            values.put(reminderContract.Notes.CONTENT, saveMessage);
-                            Uri uri = ContentUris.withAppendedId(reminderContract.Notes.CONTENT_URI,
+                            values.put(ReminderContract.Notes.TITLE, saveTitle);
+                            values.put(ReminderContract.Notes.CONTENT, saveMessage);
+                            Uri uri = ContentUris.withAppendedId(ReminderContract.Notes.CONTENT_URI,
                                     saveId);
                             contentResolver.update(uri, values, null, null);
                             //database.updateNote(saveId, saveTitle, saveMessage);
                         } else {
                             ContentValues values = new ContentValues();
-                            values.put(reminderContract.Notes.TYPE, reminderContract.PATH_NOTE);
-                            values.put(reminderContract.Notes.TITLE, saveTitle);
-                            values.put(reminderContract.Notes.CONTENT, saveMessage);
-                            contentResolver.insert(reminderContract.Notes.CONTENT_URI, values);
+                            values.put(ReminderContract.Notes.TYPE, ReminderContract.PATH_NOTE);
+                            values.put(ReminderContract.Notes.TITLE, saveTitle);
+                            values.put(ReminderContract.Notes.CONTENT, saveMessage);
+                            contentResolver.insert(ReminderContract.Notes.CONTENT_URI, values);
                         }
                         terminateActivity();
                         database.close();

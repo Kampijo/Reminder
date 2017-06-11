@@ -16,7 +16,7 @@ import android.text.TextUtils;
  * Created by kyle on 10/06/17.
  */
 
-public class reminderContentProvider extends ContentProvider {
+public class ReminderContentProvider extends ContentProvider {
 
     private static final int NOTE = 1;
     private static final int NOTE_ID = 2;
@@ -25,19 +25,19 @@ public class reminderContentProvider extends ContentProvider {
     private static final int ALERT_ID = 4;
 
     private static final UriMatcher URI_MATCHER;
-    private reminderDataHelper mOpenHelper;
+    private ReminderDataHelper mOpenHelper;
 
     static {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
-        URI_MATCHER.addURI(reminderContract.AUTHORITY, reminderContract.PATH_NOTE, NOTE);
-        URI_MATCHER.addURI(reminderContract.AUTHORITY, reminderContract.PATH_NOTE_ID, NOTE_ID);
-        URI_MATCHER.addURI(reminderContract.AUTHORITY, reminderContract.PATH_ALERT, ALERT);
-        URI_MATCHER.addURI(reminderContract.AUTHORITY, reminderContract.PATH_ALERT_ID, ALERT_ID);
+        URI_MATCHER.addURI(ReminderContract.AUTHORITY, ReminderContract.PATH_NOTE, NOTE);
+        URI_MATCHER.addURI(ReminderContract.AUTHORITY, ReminderContract.PATH_NOTE_ID, NOTE_ID);
+        URI_MATCHER.addURI(ReminderContract.AUTHORITY, ReminderContract.PATH_ALERT, ALERT);
+        URI_MATCHER.addURI(ReminderContract.AUTHORITY, ReminderContract.PATH_ALERT_ID, ALERT_ID);
     }
 
     @Override
     public boolean onCreate() {
-        mOpenHelper = new reminderDataHelper(getContext());
+        mOpenHelper = new ReminderDataHelper(getContext());
         return false;
     }
 
@@ -50,23 +50,23 @@ public class reminderContentProvider extends ContentProvider {
 
         switch(URI_MATCHER.match(uri)) {
             case NOTE:
-                builder.setTables(reminderContract.Notes.TABLE_NAME);
-                builder.appendWhere(reminderContract.Notes.TYPE + " = " +
-                        reminderContract.PATH_NOTE);
+                builder.setTables(ReminderContract.Notes.TABLE_NAME);
+                builder.appendWhere(ReminderContract.Notes.TYPE + " = " +
+                        ReminderContract.PATH_NOTE);
                 break;
             case NOTE_ID:
-                builder.setTables(reminderContract.Notes.TABLE_NAME);
-                builder.appendWhere(reminderContract.Notes._ID + " = " +
+                builder.setTables(ReminderContract.Notes.TABLE_NAME);
+                builder.appendWhere(ReminderContract.Notes._ID + " = " +
                         uri.getLastPathSegment());
                 break;
             case ALERT:
-                builder.setTables(reminderContract.Alerts.TABLE_NAME);
-                builder.appendWhere(reminderContract.Alerts.TYPE + " = " +
-                        reminderContract.PATH_ALERT);
+                builder.setTables(ReminderContract.Alerts.TABLE_NAME);
+                builder.appendWhere(ReminderContract.Alerts.TYPE + " = " +
+                        ReminderContract.PATH_ALERT);
                 break;
             case ALERT_ID:
-                builder.setTables(reminderContract.Alerts.TABLE_NAME);
-                builder.appendWhere(reminderContract.Alerts._ID + " = " +
+                builder.setTables(ReminderContract.Alerts.TABLE_NAME);
+                builder.appendWhere(ReminderContract.Alerts._ID + " = " +
                         uri.getLastPathSegment());
                 break;
             default:
@@ -90,13 +90,13 @@ public class reminderContentProvider extends ContentProvider {
     public String getType(@NonNull Uri uri) {
         switch (URI_MATCHER.match(uri)) {
             case NOTE:
-                return reminderContract.Notes.CONTENT_TYPE;
+                return ReminderContract.Notes.CONTENT_TYPE;
             case NOTE_ID:
-                return reminderContract.Notes.CONTENT_ITEM_TYPE;
+                return ReminderContract.Notes.CONTENT_ITEM_TYPE;
             case ALERT:
-                return reminderContract.Alerts.CONTENT_TYPE;
+                return ReminderContract.Alerts.CONTENT_TYPE;
             case ALERT_ID:
-                return reminderContract.Alerts.CONTENT_ITEM_TYPE;
+                return ReminderContract.Alerts.CONTENT_ITEM_TYPE;
             default:
                 return null;
         }
@@ -113,11 +113,11 @@ public class reminderContentProvider extends ContentProvider {
 
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         if(URI_MATCHER.match(uri) == NOTE){
-            long id = db.insert(reminderContract.Notes.TABLE_NAME, null, contentValues);
+            long id = db.insert(ReminderContract.Notes.TABLE_NAME, null, contentValues);
             getContext().getContentResolver().notifyChange(uri, null);
             return ContentUris.withAppendedId(uri, id);
         } else {
-            long id = db.insert(reminderContract.Alerts.TABLE_NAME, null, contentValues);
+            long id = db.insert(ReminderContract.Alerts.TABLE_NAME, null, contentValues);
             getContext().getContentResolver().notifyChange(uri, null);
             return ContentUris.withAppendedId(uri, id);
         }
@@ -131,35 +131,35 @@ public class reminderContentProvider extends ContentProvider {
         switch (URI_MATCHER.match(uri)) {
             case NOTE:
                 delCount = db.delete(
-                        reminderContract.Notes.TABLE_NAME,
+                        ReminderContract.Notes.TABLE_NAME,
                         selection,
                         selectionArgs);
                 break;
             case NOTE_ID:
                 id = uri.getLastPathSegment();
-                where = reminderContract.Notes._ID + " = " + id;
+                where = ReminderContract.Notes._ID + " = " + id;
                 if (!TextUtils.isEmpty(selection)) {
                     where += " AND " + selection;
                 }
                 delCount = db.delete(
-                        reminderContract.Notes.TABLE_NAME,
+                        ReminderContract.Notes.TABLE_NAME,
                         where,
                         selectionArgs);
                 break;
             case ALERT:
                 delCount = db.delete(
-                        reminderContract.Alerts.TABLE_NAME,
+                        ReminderContract.Alerts.TABLE_NAME,
                         selection,
                         selectionArgs);
                 break;
             case ALERT_ID:
                 id = uri.getLastPathSegment();
-                where = reminderContract.Alerts._ID + " = " + id;
+                where = ReminderContract.Alerts._ID + " = " + id;
                 if (!TextUtils.isEmpty(selection)) {
                     where += " AND " + selection;
                 }
                 delCount = db.delete(
-                        reminderContract.Alerts.TABLE_NAME,
+                        ReminderContract.Alerts.TABLE_NAME,
                         where,
                         selectionArgs);
                 break;
@@ -182,38 +182,38 @@ public class reminderContentProvider extends ContentProvider {
         switch (URI_MATCHER.match(uri)) {
             case NOTE:
                 updateCount = db.update(
-                        reminderContract.Notes.TABLE_NAME,
+                        ReminderContract.Notes.TABLE_NAME,
                         values,
                         selection,
                         selectionArgs);
                 break;
             case NOTE_ID:
                 id = uri.getLastPathSegment();
-                where = reminderContract.Notes._ID + " = " + id;
+                where = ReminderContract.Notes._ID + " = " + id;
                 if (!TextUtils.isEmpty(selection)) {
                     where += " AND " + selection;
                 }
                 updateCount = db.update(
-                        reminderContract.Notes.TABLE_NAME,
+                        ReminderContract.Notes.TABLE_NAME,
                         values,
                         where,
                         selectionArgs);
                 break;
             case ALERT:
                 updateCount = db.update(
-                        reminderContract.Notes.TABLE_NAME,
+                        ReminderContract.Notes.TABLE_NAME,
                         values,
                         selection,
                         selectionArgs);
                 break;
             case ALERT_ID:
                 id = uri.getLastPathSegment();
-                where = reminderContract.Alerts._ID + " = " + id;
+                where = ReminderContract.Alerts._ID + " = " + id;
                 if (!TextUtils.isEmpty(selection)) {
                     where += " AND " + selection;
                 }
                 updateCount = db.update(
-                        reminderContract.Alerts.TABLE_NAME,
+                        ReminderContract.Alerts.TABLE_NAME,
                         values,
                         where,
                         selectionArgs);

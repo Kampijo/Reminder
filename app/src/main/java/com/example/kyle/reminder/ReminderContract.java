@@ -8,7 +8,7 @@ import android.provider.BaseColumns;
  * Created by kyle on 10/06/17.
  */
 
-public final class reminderContract {
+public final class ReminderContract {
     /**
      * The authority of the provider.
      */
