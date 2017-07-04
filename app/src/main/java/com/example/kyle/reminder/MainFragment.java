@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
@@ -33,7 +34,9 @@ import java.util.List;
  * Created by kyle on 27/04/17.
  */
 
-public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class MainFragment extends Fragment implements
+        LoaderManager.LoaderCallbacks<Cursor>,
+        SwipeRefreshLayout.OnRefreshListener {
 
   private ReminderDataHelper mDataHelper;
   private TextView mEmptyView;
@@ -43,37 +46,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
   private String mType;
   private MultiSelector mMultiSelector;
   private ModalMultiSelectorCallback mActionModeCallBack;
+  private SwipeRefreshLayout mRefreshLayout;
   private Cursor mCursor;
-
-  @Override
-  public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    Uri uri;
-    switch(mType){
-      case "All":
-        uri = ReminderContract.All.CONTENT_URI;
-        break;
-      case "Alerts":
-        uri = ReminderContract.Alerts.CONTENT_URI;
-        break;
-      case "Notes":
-        uri = ReminderContract.Notes.CONTENT_URI;
-        break;
-      default:
-        return null;
-    }
-    return new CursorLoader(getActivity(), uri, null, null, null, null);
-  }
-
-  @Override
-  public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-    mCursor = data;
-    updateData(data);
-  }
-
-  @Override
-  public void onLoaderReset(Loader<Cursor> loader) {
-
-  }
 
   public interface EditListener {
     void startEditActivity(View v);
@@ -149,13 +123,17 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.reminder_list);
     mEmptyView = (TextView) getActivity().findViewById(R.id.empty);
+    mRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.refresh_layout);
+
     mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
     mRecyclerView.setLayoutManager(mLayoutManager);
+    mRefreshLayout.setOnRefreshListener(this);
   }
 
   public void onResume() {
     super.onResume();
-    getLoaderManager().restartLoader(0, null, this);
+    mRefreshLayout.setRefreshing(true);
+    updateData();
   }
 
   private void setupFAB() {
@@ -242,15 +220,61 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
   }
 
-  private void updateData(Cursor data) {
-    Log.d("development", "updating data");
+  private void updateData() {
+    getLoaderManager().restartLoader(0, null, this);
+  }
+
+  private void invalidate(Cursor data) {
     mAdapter = new ReminderAdapter(getContext(), data);
     mAdapter.setHasStableIds(true);
     mAdapter.setMultiSelector(mMultiSelector);
     mAdapter.setModalMultiSelectorCallback(mActionModeCallBack);
     mAdapter.setEditListener(mEditListener);
     mRecyclerView.swapAdapter(mAdapter, false);
+    mRefreshLayout.setRefreshing(false);
     emptyCheck(mType);
   }
 
+  /**
+   * Loader callbacks
+   */
+
+  @Override
+  public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+    Uri uri;
+    switch(mType){
+      case "All":
+        uri = ReminderContract.All.CONTENT_URI;
+        break;
+      case "Alerts":
+        uri = ReminderContract.Alerts.CONTENT_URI;
+        break;
+      case "Notes":
+        uri = ReminderContract.Notes.CONTENT_URI;
+        break;
+      default:
+        return null;
+    }
+    return new CursorLoader(getActivity(), uri, null, null, null, null);
+  }
+
+  @Override
+  public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    mCursor = data;
+    invalidate(data);
+  }
+
+  @Override
+  public void onLoaderReset(Loader<Cursor> loader) {
+
+  }
+
+  /**
+   * SwipeRefreshLayout callback
+   */
+
+  @Override
+  public void onRefresh() {
+    updateData();
+  }
 }
