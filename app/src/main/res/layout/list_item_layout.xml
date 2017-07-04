@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+              xmlns:card_view="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/card_view"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        card_view:cardUseCompatPadding="true"
-        card_view:cardCornerRadius="4dp"
-        android:foreground="?android:attr/selectableItemBackground">
+                                        android:id="@+id/card_view"
+                                        android:layout_gravity="center"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        card_view:cardUseCompatPadding="true"
+                                        card_view:cardCornerRadius="4dp"
+                                        android:foreground="?android:attr/selectableItemBackground">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -29,7 +29,7 @@
                 android:textSize="16dp"
                 android:maxLines="2"
                 android:ellipsize="end"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/reminder"
@@ -43,7 +43,7 @@
                 android:textSize="16dp"
                 android:minLines="1"
                 android:maxLines="7"
-                android:ellipsize="end" />
+                android:ellipsize="end"/>
 
             <TextView
                 android:id="@+id/timeLabel"
@@ -56,7 +56,7 @@
                 android:textSize="12dp"
                 android:maxLines="1"
                 android:layout_toRightOf="@id/icon"
-                android:visibility="gone" />
+                android:visibility="gone"/>
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -65,7 +65,7 @@
                 android:paddingTop="12dp"
                 android:paddingLeft="12dp"
                 android:layout_below="@id/reminder"
-                android:visibility="gone" />
+                android:visibility="gone"/>
 
 
         </RelativeLayout>

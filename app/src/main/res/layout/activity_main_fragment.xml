@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+              xmlns:tools="http://schemas.android.com/tools"
+              xmlns:fab="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
         <android.support.v7.widget.RecyclerView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/reminderList" />
+            android:id="@+id/reminder_list"/>
 
         <TextView
             android:id="@+id/empty"
@@ -26,15 +26,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:textSize="20dp"
-            android:visibility="gone" />
+            android:textSize="20sp"
+            android:visibility="gone"/>
 
         <com.github.clans.fab.FloatingActionMenu
-            android:id="@+id/floatingMenu"
+            android:id="@+id/floating_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="10dp"
@@ -49,10 +49,10 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_add_alert_white_24dp"
                 fab:fab_size="normal"
-                fab:fab_label="Add Alert"
+                fab:fab_label="@string/fab_add_alert"
                 fab:fab_colorNormal="@color/FABNormal"
                 fab:fab_colorPressed="@color/FABNormal"
-                fab:fab_colorRipple="@color/FABRipple" />
+                fab:fab_colorRipple="@color/FABRipple"/>
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/add_note"
@@ -60,12 +60,13 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_note_add_white_24dp"
                 fab:fab_size="normal"
-                fab:fab_label="Add Note"
+                fab:fab_label="@string/fab_add_note"
                 fab:fab_colorNormal="@color/FABNormal"
                 fab:fab_colorPressed="@color/FABNormal"
-                fab:fab_colorRipple="@color/FABRipple" />
+                fab:fab_colorRipple="@color/FABRipple"/>
 
         </com.github.clans.fab.FloatingActionMenu>
 
     </RelativeLayout>
+
 </LinearLayout>
