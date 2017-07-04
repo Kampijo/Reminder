@@ -2,6 +2,12 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
+
+    <!-- FAB Colours -->
     <color name="FABNormal">#E91E63</color>
     <color name="FABRipple">#F06292</color>
+
+    <!-- Multi selector colors -->
+    <color name="itemSelected">#E0E0E0</color>
+
 </resources>

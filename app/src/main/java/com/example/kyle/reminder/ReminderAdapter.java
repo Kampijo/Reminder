@@ -47,7 +47,8 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
       content = (TextView) view.findViewById(R.id.reminder);
       time = (TextView) view.findViewById(R.id.timeLabel);
       icon = (ImageView) view.findViewById(R.id.icon);
-
+      this.setSelectionModeBackgroundDrawable(null);
+      this.setSelectionModeStateListAnimator(null);
     }
 
     @Override

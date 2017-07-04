@@ -6,7 +6,8 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <RelativeLayout
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingBottom="@dimen/activity_vertical_margin"
@@ -15,58 +16,63 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         tools:context="com.example.kyle.reminder.MainActivity">
 
-        <android.support.v7.widget.RecyclerView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/reminder_list"/>
-
-        <TextView
-            android:id="@+id/empty"
-            android:text="@string/empty"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:visibility="gone"/>
+            android:layout_height="match_parent">
 
-        <com.github.clans.fab.FloatingActionMenu
-            android:id="@+id/floating_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="10dp"
-            fab:menu_icon="@drawable/ic_add_white_24dp"
-            fab:menu_colorNormal="@color/FABNormal"
-            fab:menu_colorPressed="@color/FABNormal"
-            fab:menu_colorRipple="@color/FABRipple">
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/reminder_list"/>
 
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/add_alert"
+            <TextView
+                android:id="@+id/empty"
+                android:text="@string/empty"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:visibility="gone"/>
+
+            <com.github.clans.fab.FloatingActionMenu
+                android:id="@+id/floating_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_add_alert_white_24dp"
-                fab:fab_size="normal"
-                fab:fab_label="@string/fab_add_alert"
-                fab:fab_colorNormal="@color/FABNormal"
-                fab:fab_colorPressed="@color/FABNormal"
-                fab:fab_colorRipple="@color/FABRipple"/>
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                fab:menu_icon="@drawable/ic_add_white_24dp"
+                fab:menu_colorNormal="@color/FABNormal"
+                fab:menu_colorPressed="@color/FABNormal"
+                fab:menu_colorRipple="@color/FABRipple">
 
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/add_note"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_note_add_white_24dp"
-                fab:fab_size="normal"
-                fab:fab_label="@string/fab_add_note"
-                fab:fab_colorNormal="@color/FABNormal"
-                fab:fab_colorPressed="@color/FABNormal"
-                fab:fab_colorRipple="@color/FABRipple"/>
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/add_alert"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_add_alert_white_24dp"
+                    fab:fab_size="normal"
+                    fab:fab_label="@string/fab_add_alert"
+                    fab:fab_colorNormal="@color/FABNormal"
+                    fab:fab_colorPressed="@color/FABNormal"
+                    fab:fab_colorRipple="@color/FABRipple"/>
 
-        </com.github.clans.fab.FloatingActionMenu>
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/add_note"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_note_add_white_24dp"
+                    fab:fab_size="normal"
+                    fab:fab_label="@string/fab_add_note"
+                    fab:fab_colorNormal="@color/FABNormal"
+                    fab:fab_colorPressed="@color/FABNormal"
+                    fab:fab_colorRipple="@color/FABRipple"/>
+            </com.github.clans.fab.FloatingActionMenu>
 
-    </RelativeLayout>
+        </RelativeLayout>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>
