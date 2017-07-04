@@ -22,6 +22,7 @@ public final class ReminderContract {
           Uri.parse("content://" + AUTHORITY);
 
   public static final String PATH_ALL = "all";
+  public static final String PATH_ALL_ID = "all/#";
   public static final String PATH_NOTE = "note";
   public static final String PATH_NOTE_ID = "note/#";
   public static final String PATH_ALERT = "alert";
@@ -78,6 +79,31 @@ public final class ReminderContract {
     public static final String CONTENT_ITEM_TYPE =
             ContentResolver.CURSOR_ITEM_BASE_TYPE +
                     "/" + AUTHORITY + "/" + PATH_ALERT;
+
+    public static final String[] PROJECTION_ALL = {_ID, TYPE, TITLE, CONTENT, TIME, FREQUENCY};
+
+  }
+
+  public static final class All implements BaseColumns {
+    public static final String TABLE_NAME = "reminders";
+    public static final String _ID = "_id";
+    public static final String TYPE = "type";
+    public static final String TITLE = "title";
+    public static final String CONTENT = "content";
+    public static final String TIME = "time";
+    public static final String FREQUENCY = "frequency";
+
+    public static final Uri CONTENT_URI =
+            BASE_CONTENT_URI.buildUpon().appendPath(PATH_ALL).build();
+
+    // Custom MIME types
+    public static final String CONTENT_TYPE =
+            ContentResolver.CURSOR_DIR_BASE_TYPE +
+                    "/" + AUTHORITY + "/" + PATH_ALL;
+
+    public static final String CONTENT_ITEM_TYPE =
+            ContentResolver.CURSOR_ITEM_BASE_TYPE +
+                    "/" + AUTHORITY + "/" + PATH_ALL;
 
     public static final String[] PROJECTION_ALL = {_ID, TYPE, TITLE, CONTENT, TIME, FREQUENCY};
 

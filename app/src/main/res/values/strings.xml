@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Reminder</string>
-    <string name="titleHint">Title</string>
-    <string name="reminderHint">Enter a reminder...</string>
+    <string name="title_hint">Title</string>
+    <string name="reminder_hint">Enter a reminder...</string>
     <string name="delete">Delete</string>
     <string name="empty">No items.</string>
     <string name="drawer_open">Open navigation drawer</string>
@@ -13,5 +13,8 @@
     <string name="nav_notes">Notes</string>
     <string name="nav_settings">Settings</string>
 
-    <!-- Toolbar titles when navigation menu item is selected -->
+    <!-- FAB labels -->
+    <string name="fab_add_note">Add Note</string>
+    <string name="fab_add_alert">Add Alert</string>
+
 </resources>

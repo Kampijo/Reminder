@@ -1,20 +1,20 @@
 package com.example.kyle.reminder;
 
-import android.content.BroadcastReceiver;
 import android.content.ContentUris;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,17 +33,47 @@ import java.util.List;
  * Created by kyle on 27/04/17.
  */
 
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
-  private ReminderDataHelper database;
-  private TextView empty;
+  private ReminderDataHelper mDataHelper;
+  private TextView mEmptyView;
   private RecyclerView mRecyclerView;
   private RecyclerView.LayoutManager mLayoutManager;
-  private ReminderAdapter adapter;
-  private String type;
+  private ReminderAdapter mAdapter;
+  private String mType;
   private MultiSelector mMultiSelector;
   private ModalMultiSelectorCallback mActionModeCallBack;
   private Cursor mCursor;
+
+  @Override
+  public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+    Uri uri;
+    switch(mType){
+      case "All":
+        uri = ReminderContract.All.CONTENT_URI;
+        break;
+      case "Alerts":
+        uri = ReminderContract.Alerts.CONTENT_URI;
+        break;
+      case "Notes":
+        uri = ReminderContract.Notes.CONTENT_URI;
+        break;
+      default:
+        return null;
+    }
+    return new CursorLoader(getActivity(), uri, null, null, null, null);
+  }
+
+  @Override
+  public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    mCursor = data;
+    updateData(data);
+  }
+
+  @Override
+  public void onLoaderReset(Loader<Cursor> loader) {
+
+  }
 
   public interface EditListener {
     void startEditActivity(View v);
@@ -99,7 +129,9 @@ public class MainFragment extends Fragment {
 
       }
     };
+    mType = getArguments().getString("Type");
 
+    getLoaderManager().initLoader(0, null, this);
   }
 
   @Override
@@ -111,52 +143,23 @@ public class MainFragment extends Fragment {
 
   public void onStart() {
     super.onStart();
-    database = new ReminderDataHelper(getContext());
-    type = getArguments().getString("Type");
-    final Cursor cursor = getCursor(type);
-    mCursor = cursor;
+    mDataHelper = new ReminderDataHelper(getContext());
 
     setupFAB();
-    LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(getContext());
-    IntentFilter filter = new IntentFilter("REFRESH");
-    broadcastManager.registerReceiver(deleteReceiver, filter);
 
-    mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.reminderList);
+    mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.reminder_list);
+    mEmptyView = (TextView) getActivity().findViewById(R.id.empty);
     mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
     mRecyclerView.setLayoutManager(mLayoutManager);
-    adapter = new ReminderAdapter(getContext(), cursor);
-    adapter.setMultiSelector(mMultiSelector);
-    adapter.setModalMultiSelectorCallback(mActionModeCallBack);
-    adapter.setEditListener(mEditListener);
-    mRecyclerView.setAdapter(adapter);
-
-    empty = (TextView) getActivity().findViewById(R.id.empty);
-    emptyCheck(this.type);
-
-    adapter.notifyDataSetChanged();
-    mRecyclerView.invalidate();
   }
 
   public void onResume() {
     super.onResume();
-  }
-
-  public void onPause() {
-    super.onPause();
-  }
-
-  private Cursor getCursor(String type) {
-    Cursor cursor;
-
-    if (type.equals("All")) cursor = database.getAllItems();
-    else if (type.equals("Alerts")) cursor = database.getAllAlerts();
-    else cursor = database.getAllNotes();
-
-    return cursor;
+    getLoaderManager().restartLoader(0, null, this);
   }
 
   private void setupFAB() {
-    FloatingActionMenu floatingActionMenu = (FloatingActionMenu) getActivity().findViewById(R.id.floatingMenu);
+    FloatingActionMenu floatingActionMenu = (FloatingActionMenu) getActivity().findViewById(R.id.floating_menu);
     floatingActionMenu.setClosedOnTouchOutside(true);
     FloatingActionButton addAlert = (FloatingActionButton) getActivity().findViewById(R.id.add_alert);
     FloatingActionButton addNote = (FloatingActionButton) getActivity().findViewById(R.id.add_note);
@@ -176,20 +179,19 @@ public class MainFragment extends Fragment {
 
   }
 
-  // checks if specified item type has any members in database and sets emptyView
+  // checks if specified item mType has any members in mDataHelper and sets emptyView
   private void emptyCheck(String type) {
-    if (database.isEmpty(type)) {
-      empty.setVisibility(View.VISIBLE);
+    if (mDataHelper.isEmpty(type)) {
+      mEmptyView.setVisibility(View.VISIBLE);
       mRecyclerView.setVisibility(View.GONE);
     } else {
-      empty.setVisibility(View.GONE);
+      mEmptyView.setVisibility(View.GONE);
       mRecyclerView.setVisibility(View.VISIBLE);
     }
   }
 
 
   private AlertDialog deleteDialog(final ActionMode actionMode) {
-
     return new AlertDialog.Builder(getContext())
             .setTitle("Confirm")
             .setMessage("Do you want to delete?")
@@ -197,13 +199,17 @@ public class MainFragment extends Fragment {
             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
               public void onClick(DialogInterface dialog, int i) {
+                Uri uri;
                 List<Integer> positions = mMultiSelector.getSelectedPositions();
                 for (int j = 0; j < positions.size(); j++) {
                   int position = positions.get(j);
                   mCursor.moveToPosition(position);
                   int id = mCursor.getInt(mCursor.getColumnIndex(ReminderDataHelper.DB_COLUMN_ID));
                   int deleteId = id;
-                  Cursor cursor = database.getItem(id);
+                  uri = ContentUris.withAppendedId(ReminderContract.All.CONTENT_URI,
+                          deleteId);
+                  Cursor cursor = getContext().getContentResolver().query(uri,
+                          null, null, null, null);
                   cursor.moveToFirst();
 
                   // if the selectors item for deletion is an alert, cancel the alarm
@@ -211,19 +217,15 @@ public class MainFragment extends Fragment {
                           .equals("alert"))) {
                     Intent delete = new Intent(getContext(), AlarmService.class);
                     delete.putExtra(AlarmService.ID_KEY, deleteId);
-                    delete.putExtra("deletedFromMain", true);
                     delete.setAction(AlarmService.DELETE);
                     getContext().startService(delete);
-                    // otherwise just delete note and notify adapter
+                    // otherwise just delete note and notify mAdapter
                   } else {
-                    Uri uri = ContentUris.withAppendedId(ReminderContract.Alerts.CONTENT_URI,
+                    uri = ContentUris.withAppendedId(ReminderContract.Alerts.CONTENT_URI,
                             deleteId);
                     getContext().getContentResolver().delete(uri, null, null);
                   }
                 }
-                // sends refresh signal to Main UI
-                Intent refresh = new Intent("REFRESH");
-                LocalBroadcastManager.getInstance(getContext()).sendBroadcast(refresh);
                 dialog.dismiss();
                 actionMode.finish();
                 mMultiSelector.clearSelections();
@@ -240,15 +242,15 @@ public class MainFragment extends Fragment {
 
   }
 
-  private BroadcastReceiver deleteReceiver = new BroadcastReceiver() {
-    @Override
-    public void onReceive(Context context, Intent intent) {
-      if (intent.getAction().equals("REFRESH")) {
-        emptyCheck(type);
-        adapter.notifyDataSetChanged();
-        mRecyclerView.invalidate();
-      }
-    }
-  };
+  private void updateData(Cursor data) {
+    Log.d("development", "updating data");
+    mAdapter = new ReminderAdapter(getContext(), data);
+    mAdapter.setHasStableIds(true);
+    mAdapter.setMultiSelector(mMultiSelector);
+    mAdapter.setModalMultiSelectorCallback(mActionModeCallBack);
+    mAdapter.setEditListener(mEditListener);
+    mRecyclerView.swapAdapter(mAdapter, false);
+    emptyCheck(mType);
+  }
 
 }

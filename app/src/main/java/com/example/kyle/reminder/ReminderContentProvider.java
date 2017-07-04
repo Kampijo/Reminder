@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * Created by kyle on 10/06/17.
@@ -24,6 +25,10 @@ public class ReminderContentProvider extends ContentProvider {
   private static final int ALERT = 3;
   private static final int ALERT_ID = 4;
 
+  private static final int ALL = 5;
+  private static final int ALL_ID = 6;
+
+
   private static final UriMatcher URI_MATCHER;
   private ReminderDataHelper mOpenHelper;
 
@@ -33,6 +38,8 @@ public class ReminderContentProvider extends ContentProvider {
     URI_MATCHER.addURI(ReminderContract.AUTHORITY, ReminderContract.PATH_NOTE_ID, NOTE_ID);
     URI_MATCHER.addURI(ReminderContract.AUTHORITY, ReminderContract.PATH_ALERT, ALERT);
     URI_MATCHER.addURI(ReminderContract.AUTHORITY, ReminderContract.PATH_ALERT_ID, ALERT_ID);
+    URI_MATCHER.addURI(ReminderContract.AUTHORITY, ReminderContract.PATH_ALL, ALL);
+    URI_MATCHER.addURI(ReminderContract.AUTHORITY, ReminderContract.PATH_ALL_ID, ALL_ID);
   }
 
   @Override
@@ -51,8 +58,8 @@ public class ReminderContentProvider extends ContentProvider {
     switch (URI_MATCHER.match(uri)) {
       case NOTE:
         builder.setTables(ReminderContract.Notes.TABLE_NAME);
-        builder.appendWhere(ReminderContract.Notes.TYPE + " = " +
-                ReminderContract.PATH_NOTE);
+        builder.appendWhere(ReminderContract.Notes.TYPE + " = '" +
+                ReminderContract.PATH_NOTE + "'");
         break;
       case NOTE_ID:
         builder.setTables(ReminderContract.Notes.TABLE_NAME);
@@ -61,12 +68,20 @@ public class ReminderContentProvider extends ContentProvider {
         break;
       case ALERT:
         builder.setTables(ReminderContract.Alerts.TABLE_NAME);
-        builder.appendWhere(ReminderContract.Alerts.TYPE + " = " +
-                ReminderContract.PATH_ALERT);
+        builder.appendWhere(ReminderContract.Alerts.TYPE + " = '" +
+                ReminderContract.PATH_ALERT + "'");
         break;
       case ALERT_ID:
         builder.setTables(ReminderContract.Alerts.TABLE_NAME);
         builder.appendWhere(ReminderContract.Alerts._ID + " = " +
+                uri.getLastPathSegment());
+        break;
+      case ALL:
+        builder.setTables(ReminderContract.Alerts.TABLE_NAME);
+        break;
+      case ALL_ID:
+        builder.setTables(ReminderContract.All.TABLE_NAME);
+        builder.appendWhere(ReminderContract.All._ID + " = " +
                 uri.getLastPathSegment());
         break;
       default:
@@ -82,6 +97,7 @@ public class ReminderContentProvider extends ContentProvider {
                     null,
                     null,
                     sortOrder);
+    cursor.setNotificationUri(getContext().getContentResolver(), ReminderContract.BASE_CONTENT_URI);
     return cursor;
   }
 
@@ -97,6 +113,10 @@ public class ReminderContentProvider extends ContentProvider {
         return ReminderContract.Alerts.CONTENT_TYPE;
       case ALERT_ID:
         return ReminderContract.Alerts.CONTENT_ITEM_TYPE;
+      case ALL:
+        return ReminderContract.All.CONTENT_TYPE;
+      case ALL_ID:
+        return ReminderContract.All.CONTENT_ITEM_TYPE;
       default:
         return null;
     }
@@ -167,9 +187,7 @@ public class ReminderContentProvider extends ContentProvider {
         throw new IllegalArgumentException("Unsupported URI: " + uri);
     }
     // notify all listeners of changes:
-    if (delCount > 0) {
-      getContext().getContentResolver().notifyChange(uri, null);
-    }
+    getContext().getContentResolver().notifyChange(uri, null);
     return delCount;
   }
 

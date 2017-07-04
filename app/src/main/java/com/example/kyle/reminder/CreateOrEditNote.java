@@ -34,8 +34,8 @@ public class CreateOrEditNote extends AppCompatActivity {
     Intent intent = getIntent();
     mID = intent.getIntExtra(ID_KEY, 0);
 
-    mContent = (EditText) findViewById(R.id.noteContent);
-    mTitle = (EditText) findViewById(R.id.noteTitle);
+    mContent = (EditText) findViewById(R.id.note_content);
+    mTitle = (EditText) findViewById(R.id.note_title);
 
     Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
     this.setSupportActionBar(toolbar);

@@ -3,10 +3,13 @@ package com.example.kyle.reminder;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.WakefulBroadcastReceiver;
@@ -27,8 +30,9 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     String title = intent.getStringExtra(AlarmService.TITLE_KEY);
     String msg = intent.getStringExtra(AlarmService.MESSAGE_KEY);
 
-    ReminderDataHelper database = new ReminderDataHelper(context);
-    Cursor cursor = database.getItem(id);
+    Uri uri = ContentUris.withAppendedId(ReminderContract.All.CONTENT_URI, id);
+    Cursor cursor = context.getContentResolver().query(uri,
+            null, null, null, null);
     cursor.moveToFirst();
 
     int frequency = cursor.getInt(cursor.getColumnIndex(ReminderDataHelper.DB_COLUMN_FREQUENCY));
@@ -51,7 +55,12 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         time.add(Calendar.YEAR, 1);
 
       }
-      database.updateTime(id, time.getTimeInMillis());
+
+      ContentValues values = new ContentValues();
+      values.put(ReminderContract.Alerts.TIME, time.getTimeInMillis());
+      uri = ContentUris.withAppendedId(ReminderContract.Alerts.CONTENT_URI, id);
+      context.getContentResolver().update(uri, values, null, null);
+
       Intent setAlarm = new Intent(context, AlarmService.class);
       setAlarm.putExtra(AlarmService.ID_KEY, id);
       setAlarm.setAction(AlarmService.CREATE);

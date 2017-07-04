@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.content.LocalBroadcastManager;
 
 /**
  * Created by kyle on 07/09/16.
@@ -40,14 +39,12 @@ public class AlarmService extends IntentService {
   protected void onHandleIntent(Intent intent) {
     String action = intent.getAction();
     int id = intent.getIntExtra(CreateOrEditAlert.ID_KEY, 0);
-    boolean deletedFromMain = intent.getBooleanExtra("deletedFromMain", false);
-
     if (matcher.matchAction(action)) {
-      execute(action, id, deletedFromMain);
+      execute(action, id);
     }
   }
 
-  private void execute(String action, int id, boolean deletedFromMain) {
+  private void execute(String action, int id) {
 
     AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
     Uri uri = ContentUris.withAppendedId(ReminderContract.Alerts.CONTENT_URI,
@@ -76,15 +73,6 @@ public class AlarmService extends IntentService {
               (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
       getContentResolver().delete(uri, null, null);
       notificationManager.cancel(id);
-
-      // if deleted from the main screen, then broadcast refresh signal
-      if (deletedFromMain) {
-        Intent refresh = new Intent("REFRESH");
-        LocalBroadcastManager.getInstance(this).sendBroadcast(refresh);
-        // otherwise, send deleted signal to exit alert detail screen
-      } else {
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("DELETED"));
-      }
 
     } else if (CANCEL.equals(action)) {
       alarm.cancel(pendingIntent);

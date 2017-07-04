@@ -16,30 +16,30 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-  private TextView txtName;
+  private TextView mNavTitle;
   private DrawerLayout mDrawerLayout;
   private ActionBarDrawerToggle mDrawerToggle;
   private String mActivityTitle;
-  private NavigationView navigationView;
-  private View navHeader;
-  private Toolbar toolbar;
-  private FragmentManager fragmentManager;
+  private NavigationView mNavigationView;
+  private View mNavHeader;
+  private Toolbar mToolbar;
+  private FragmentManager mFragmentManager;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
 
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-    toolbar = (Toolbar) findViewById(R.id.tool_bar);
-    this.setSupportActionBar(toolbar);
+    mToolbar = (Toolbar) findViewById(R.id.tool_bar);
+    this.setSupportActionBar(mToolbar);
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-    fragmentManager = getSupportFragmentManager();
+    mFragmentManager = getSupportFragmentManager();
     Bundle args = new Bundle();
     args.putString("Type", "All");
     Fragment main = new MainFragment();
     main.setArguments(args);
-    fragmentManager.beginTransaction().add(R.id.content_frame, main).commit();
+    mFragmentManager.beginTransaction().add(R.id.content_frame, main).commit();
     setupDrawer();
   }
 
@@ -63,17 +63,17 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void setupDrawer() {
-    navigationView = (NavigationView) findViewById(R.id.navigation_view);
+    mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
     mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
     mActivityTitle = getTitle().toString();
 
-    navHeader = navigationView.getHeaderView(0);
-    txtName = (TextView) navHeader.findViewById(R.id.name);
+    mNavHeader = mNavigationView.getHeaderView(0);
+    mNavTitle = (TextView) mNavHeader.findViewById(R.id.name);
 
-    txtName.setText(mActivityTitle);
+    mNavTitle.setText(mActivityTitle);
 
     //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
-    navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+    mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
       // This method will trigger on item Click of navigation menu
       @Override
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
     args.putString("Type", type);
     Fragment main = new MainFragment();
     main.setArguments(args);
-    fragmentManager.beginTransaction().replace(R.id.content_frame, main).commit();
+    mFragmentManager.beginTransaction().replace(R.id.content_frame, main).commit();
   }
 
 

@@ -132,6 +132,13 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
     mEditListener = l;
   }
 
+  @Override
+  public long getItemId(int position){
+    mCursor.moveToPosition(position);
+    return (long) mCursor.getInt(mCursor.getColumnIndex(ReminderDataHelper.DB_COLUMN_ID));
+  }
+
+
 }
 
 

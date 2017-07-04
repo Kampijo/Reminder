@@ -1,6 +1,5 @@
 package com.example.kyle.reminder;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -45,22 +44,7 @@ public class ReminderDataHelper extends SQLiteOpenHelper {
     onCreate(db);
   }
 
-
-  public boolean updateTime(Integer id, long time) {
-    SQLiteDatabase db = this.getWritableDatabase();
-    ContentValues values = new ContentValues();
-    values.put(DB_COLUMN_TIME, time);
-    db.update(DB_TABLE_NAME, values, DB_COLUMN_ID + " = ? ",
-            new String[]{Integer.toString(id)});
-    return true;
-  }
-
-  public Cursor getItem(int id) {
-    SQLiteDatabase db = this.getReadableDatabase();
-    return db.rawQuery("SELECT * FROM " + DB_TABLE_NAME + " WHERE " +
-            DB_COLUMN_ID + " = ? ", new String[]{Integer.toString(id)});
-  }
-
+  // TODO: Deprecate these methods
   public Cursor getAllItems() {
     SQLiteDatabase db = this.getReadableDatabase();
     return db.rawQuery("SELECT * FROM " + DB_TABLE_NAME + " ORDER BY " + DB_COLUMN_ID + " DESC", null);

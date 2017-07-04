@@ -2,19 +2,15 @@ package com.example.kyle.reminder;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -65,10 +61,6 @@ public class CreateOrEditAlert extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_create_or_edit_alert);
-
-    LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
-    IntentFilter filter = new IntentFilter("DELETED");
-    broadcastManager.registerReceiver(deleteReceiver, filter);
 
     mContentResolver = getContentResolver();
 
@@ -305,6 +297,7 @@ public class CreateOrEditAlert extends AppCompatActivity {
                           deleteId);
                   mContentResolver.delete(uri, null, null);
                   startService(delete);
+                  terminateActivity();
                 } else {
                   terminateActivity();
                 }
@@ -373,16 +366,5 @@ public class CreateOrEditAlert extends AppCompatActivity {
       saveDialog(mID, titleString, contentString, Calendar.getInstance().getTimeInMillis()).show();
     }
   }
-
-  // once item is deleted, we can safely exit the activity
-  private BroadcastReceiver deleteReceiver = new BroadcastReceiver() {
-    @Override
-    public void onReceive(Context context, Intent intent) {
-      if (intent.getAction().equals("DELETED")) {
-        terminateActivity();
-      }
-    }
-  };
-
 
 }
