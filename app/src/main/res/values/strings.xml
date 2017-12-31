@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">Reminder</string>
     <string name="title_hint">Title</string>
-    <string name="reminder_hint">Enter a reminder...</string>
+    <string name="reminder_hint">Enter a reminder…</string>
     <string name="delete">Delete</string>
     <string name="empty">No items.</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
-    <!-- Navigation Drawer menu labels -->
+    <!-- Navigation drawer menu labels -->
     <string name="nav_home">Home</string>
     <string name="nav_alerts">Alerts</string>
     <string name="nav_notes">Notes</string>
@@ -17,4 +17,19 @@
     <string name="fab_add_note">Add Note</string>
     <string name="fab_add_alert">Add Alert</string>
 
+    <!-- Action bar titles -->
+    <string name="action_bar_create_alert">Create Alert</string>
+    <string name="action_bar_edit_alert">Edit Alert</string>
+    <string name="action_bar_create_note">Create Note</string>
+    <string name="action_bar_edit_note">Edit Note</string>
+
+    <!-- Dialog strings -->
+    <string name="confirm">Confirm</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="save_prompt">Do you want to save?</string>
+    <string name="delete_prompt">Are you sure you want to delete?</string>
+    <string name="repeat">Repeat</string>
 </resources>

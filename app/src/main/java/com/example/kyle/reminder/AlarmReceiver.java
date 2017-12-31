@@ -3,6 +3,7 @@ package com.example.kyle.reminder;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -25,19 +26,31 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
+    int id = intent.getIntExtra(ReminderParams.ID, -1);
+    String title = intent.getStringExtra(ReminderParams.TITLE);
+    String msg = intent.getStringExtra(ReminderParams.CONTENT);
 
-    int id = intent.getIntExtra(AlarmService.ID_KEY, 0);
-    String title = intent.getStringExtra(AlarmService.TITLE_KEY);
-    String msg = intent.getStringExtra(AlarmService.MESSAGE_KEY);
+    if (context == null) {
+      return;
+    }
+
+    ContentResolver contentResolver = context.getContentResolver();
+    if (contentResolver == null) {
+      return;
+    }
 
     Uri uri = ContentUris.withAppendedId(ReminderContract.All.CONTENT_URI, id);
-    Cursor cursor = context.getContentResolver().query(uri,
+    Cursor cursor = contentResolver.query(uri,
             null, null, null, null);
-    cursor.moveToFirst();
 
-    int frequency = cursor.getInt(cursor.getColumnIndex(ReminderDataHelper.DB_COLUMN_FREQUENCY));
+    if (cursor == null || !cursor.moveToFirst()) {
+      return;
+    }
+
+    int frequency = cursor.getInt(cursor.getColumnIndex(ReminderParams.FREQUENCY));
     Calendar time = Calendar.getInstance();
-    time.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(ReminderDataHelper.DB_COLUMN_TIME)));
+    time.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(ReminderParams.TIME)));
+    cursor.close();
 
     if (frequency > 0) {
       if (frequency == HOURLY) {
@@ -62,13 +75,13 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
       context.getContentResolver().update(uri, values, null, null);
 
       Intent setAlarm = new Intent(context, AlarmService.class);
-      setAlarm.putExtra(AlarmService.ID_KEY, id);
+      setAlarm.putExtra(ReminderParams.ID, id);
       setAlarm.setAction(AlarmService.CREATE);
       context.startService(setAlarm);
     }
 
     Intent result = new Intent(context, CreateOrEditAlert.class);
-    result.putExtra(AlarmService.ID_KEY, id);
+    result.putExtra(ReminderParams.ID, id);
     TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
     stackBuilder.addParentStack(CreateOrEditAlert.class);
     stackBuilder.addNextIntent(result);

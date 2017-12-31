@@ -30,16 +30,19 @@ public class MainActivity extends AppCompatActivity {
 
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-    mToolbar = (Toolbar) findViewById(R.id.tool_bar);
+    mToolbar = findViewById(R.id.tool_bar);
     this.setSupportActionBar(mToolbar);
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+    if (getSupportActionBar() != null) {
+      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
     mFragmentManager = getSupportFragmentManager();
     Bundle args = new Bundle();
-    args.putString("Type", "All");
-    Fragment main = new MainFragment();
-    main.setArguments(args);
-    mFragmentManager.beginTransaction().add(R.id.content_frame, main).commit();
+    args.putSerializable(ReminderParams.TYPE, ReminderType.ALL);
+    Fragment reminderFragment = new ReminderFragment();
+    reminderFragment.setArguments(args);
+    mFragmentManager.beginTransaction().add(R.id.content_frame, reminderFragment).commit();
     setupDrawer();
   }
 
@@ -63,38 +66,35 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void setupDrawer() {
-    mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
-    mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+    mNavigationView = findViewById(R.id.navigation_view);
+    mDrawerLayout = findViewById(R.id.drawer_layout);
     mActivityTitle = getTitle().toString();
 
     mNavHeader = mNavigationView.getHeaderView(0);
-    mNavTitle = (TextView) mNavHeader.findViewById(R.id.name);
+    mNavTitle = mNavHeader.findViewById(R.id.name);
 
     mNavTitle.setText(mActivityTitle);
 
-    //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
     mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
       // This method will trigger on item Click of navigation menu
       @Override
       public boolean onNavigationItemSelected(MenuItem menuItem) {
-
-        //Check to see which item was being clicked and perform appropriate action
         switch (menuItem.getItemId()) {
           case R.id.nav_home:
             mDrawerLayout.closeDrawers();
             Toast.makeText(getApplicationContext(), "Showing all items", Toast.LENGTH_SHORT).show();
-            reloadView("All");
+            reloadReminders(ReminderType.ALL);
             break;
           case R.id.nav_alerts:
             mDrawerLayout.closeDrawers();
             Toast.makeText(getApplicationContext(), "Showing all alerts", Toast.LENGTH_SHORT).show();
-            reloadView("Alerts");
+            reloadReminders(ReminderType.ALERT);
             break;
           case R.id.nav_notes:
             mDrawerLayout.closeDrawers();
             Toast.makeText(getApplicationContext(), "Showing all notes", Toast.LENGTH_SHORT).show();
-            reloadView("Notes");
+            reloadReminders(ReminderType.NOTE);
             break;
           case R.id.nav_settings:
             mDrawerLayout.closeDrawers();
@@ -127,14 +127,13 @@ public class MainActivity extends AppCompatActivity {
     mDrawerLayout.addDrawerListener(mDrawerToggle);
   }
 
-  public void reloadView(String type) {
+  public void reloadReminders(ReminderType type) {
     Bundle args = new Bundle();
-    args.putString("Type", type);
-    Fragment main = new MainFragment();
-    main.setArguments(args);
-    mFragmentManager.beginTransaction().replace(R.id.content_frame, main).commit();
+    args.putSerializable(ReminderParams.TYPE, type);
+    Fragment reminderFragment = new ReminderFragment();
+    reminderFragment.setArguments(args);
+    mFragmentManager.beginTransaction().replace(R.id.content_frame, reminderFragment).commit();
   }
-
 
 }
 

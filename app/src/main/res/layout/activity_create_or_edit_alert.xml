@@ -1,85 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context="com.example.kyle.reminder.CreateOrEditAlert">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    tools:context=".CreateOrEditAlert">
 
-    <LinearLayout
+  <include
+      android:id="@+id/tool_bar"
+      layout="@layout/tool_bar"/>
+
+  <LinearLayout
+      android:layout_below="@id/tool_bar"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:padding="@dimen/default_half_padding"
+      android:orientation="vertical">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/title_height"
+        android:id="@+id/alert_title"
+        android:hint="@string/title_hint"
+        android:gravity="start"
+        android:layout_gravity="top"
+        android:inputType="textPersonName"
+        android:background="@drawable/bottom_border"
+        android:padding="@dimen/default_full_padding"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/content_height"
+        android:id="@+id/alert_content"
+        android:inputType="textMultiLine"
+        android:gravity="start"
+        android:hint="@string/reminder_hint"
+        android:background="@drawable/bottom_border"
+        android:padding="@dimen/default_full_padding"/>
+
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <include layout="@layout/tool_bar"></include>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="8dp"
-            android:orientation="vertical">
-
-            <android.support.v7.widget.CardView
-                xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/alert_title_card"
-                android:layout_gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                card_view:cardCornerRadius="4dp"
-                card_view:cardUseCompatPadding="true"
-                card_view:contentPadding="4dp">
-
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/title_height"
-                    android:id="@+id/alertTitle"
-                    android:hint="@string/title_hint"
-                    android:gravity="start"
-                    android:layout_gravity="top"
-                    android:inputType="textPersonName"
-                    android:background="@null"
-                    android:padding="4dp"/>
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/alert_content_card"
-                android:layout_gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                card_view:cardCornerRadius="4dp"
-                card_view:cardUseCompatPadding="true"
-                card_view:contentPadding="4dp">
-
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/content_height"
-                    android:layout_below="@id/alertTitle"
-                    android:id="@+id/alertContent"
-                    android:inputType="textMultiLine"
-                    android:gravity="start"
-                    android:hint="@string/reminder_hint"
-                    android:background="@null"
-                    android:padding="4dp"/>
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/alert_settings_card"
-                android:layout_gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                card_view:cardCornerRadius="4dp"
-                card_view:cardUseCompatPadding="true"
-                card_view:contentPadding="4dp">
-
-                <ListView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/alertSettings"
-                    android:layout_below="@+id/alertContent"/>
-            </android.support.v7.widget.CardView>
-        </LinearLayout>
-
-    </LinearLayout>
+        android:id="@+id/alert_settings" />
+  </LinearLayout>
 
 </RelativeLayout>

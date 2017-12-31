@@ -7,7 +7,12 @@
     <color name="FABNormal">#E91E63</color>
     <color name="FABRipple">#F06292</color>
 
-    <!-- Multi selector colors -->
-    <color name="itemSelected">#E0E0E0</color>
+    <!-- Drawable colors -->
+    <color name="itemSelected">#EEEEEE</color>
+    <color name="bottomBorder">#B0BEC5</color>
+
+    <!-- Common colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 
 </resources>

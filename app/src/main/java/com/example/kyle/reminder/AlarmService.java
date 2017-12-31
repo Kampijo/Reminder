@@ -23,10 +23,6 @@ public class AlarmService extends IntentService {
   public static final String DELETE = "DELETE";
   private IntentFilter matcher;
 
-  public static final String ID_KEY = "id";
-  public static final String TITLE_KEY = "title";
-  public static final String MESSAGE_KEY = "msg";
-
   public AlarmService() {
     super("AlarmService");
     matcher = new IntentFilter();
@@ -38,7 +34,7 @@ public class AlarmService extends IntentService {
   @Override
   protected void onHandleIntent(Intent intent) {
     String action = intent.getAction();
-    int id = intent.getIntExtra(CreateOrEditAlert.ID_KEY, 0);
+    int id = intent.getIntExtra(ReminderParams.ID, 0);
     if (matcher.matchAction(action)) {
       execute(action, id);
     }
@@ -50,19 +46,22 @@ public class AlarmService extends IntentService {
     Uri uri = ContentUris.withAppendedId(ReminderContract.Alerts.CONTENT_URI,
             id);
     Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-    cursor.moveToFirst();
+
+    if (cursor == null || !cursor.moveToFirst()) {
+      return;
+    }
 
     Intent intent = new Intent(this, AlarmReceiver.class);
-    intent.putExtra(ID_KEY, cursor.getInt(cursor.getColumnIndex(ReminderContract.Alerts._ID)));
-    intent.putExtra(TITLE_KEY, cursor.getString(
-            cursor.getColumnIndex(ReminderContract.Alerts.TITLE)));
-    intent.putExtra(MESSAGE_KEY, cursor.getString(
-            cursor.getColumnIndex(ReminderContract.Alerts.CONTENT)));
+    intent.putExtra(ReminderParams.ID, cursor.getInt(cursor.getColumnIndex(ReminderParams.ID)));
+    intent.putExtra(ReminderParams.TITLE, cursor.getString(cursor.getColumnIndex(
+        ReminderParams.TITLE)));
+    intent.putExtra(ReminderParams.CONTENT, cursor.getString(cursor.getColumnIndex(
+        ReminderParams.CONTENT)));
 
     PendingIntent pendingIntent = PendingIntent.getBroadcast(this, id, intent,
             PendingIntent.FLAG_UPDATE_CURRENT);
 
-    long timeInMilliseconds = cursor.getLong(cursor.getColumnIndex(ReminderDataHelper.DB_COLUMN_TIME));
+    long timeInMilliseconds = cursor.getLong(cursor.getColumnIndex(ReminderParams.TIME));
 
     if (CREATE.equals(action)) {
       alarm.setExact(AlarmManager.RTC_WAKEUP, timeInMilliseconds, pendingIntent);

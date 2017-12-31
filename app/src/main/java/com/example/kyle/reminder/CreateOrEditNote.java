@@ -5,10 +5,10 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,10 +19,8 @@ import android.widget.EditText;
 
 public class CreateOrEditNote extends AppCompatActivity {
   private EditText mTitle, mContent;
-  private int mID = 0;
   private ContentResolver mContentResolver;
-
-  private static final String ID_KEY = "id";
+  private ReminderItem mData;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -32,34 +30,28 @@ public class CreateOrEditNote extends AppCompatActivity {
     mContentResolver = getContentResolver();
 
     Intent intent = getIntent();
-    mID = intent.getIntExtra(ID_KEY, 0);
+    mData = intent.getParcelableExtra("data");
 
-    mContent = (EditText) findViewById(R.id.note_content);
-    mTitle = (EditText) findViewById(R.id.note_title);
+    mContent = findViewById(R.id.note_content);
+    mTitle = findViewById(R.id.note_title);
 
-    Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+    Toolbar toolbar = findViewById(R.id.tool_bar);
     this.setSupportActionBar(toolbar);
+    ActionBar actionBar = getSupportActionBar();
 
-    if (mID > 0) {
-      Uri uri = ContentUris.withAppendedId(ReminderContract.Notes.CONTENT_URI,
-              mID);
-      Cursor cursor = mContentResolver.query(uri, null, null, null, null);
-      cursor.moveToFirst();
-      String titleString = cursor.getString(cursor.getColumnIndex(ReminderContract.Notes.TITLE));
-      String contentString = cursor.getString(cursor.getColumnIndex(ReminderContract.Notes.CONTENT));
-      mContent.setText(contentString);
-      mTitle.setText(titleString);
-      getSupportActionBar().setTitle("Edit Note");
+    if (mData != null) {
+      mTitle.setText(mData.getTitle());
+      mContent.setText(mData.getContent());
+      setActionBarTitle(actionBar, this.getString(R.string.action_bar_edit_note));
     } else {
-      getSupportActionBar().setTitle("Create Note");
+      mData = new ReminderItem();
+      setActionBarTitle(actionBar, this.getString(R.string.action_bar_create_note));
     }
-
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
   }
 
   @Override
   public void onBackPressed() {
-    saveNote();
+    promptSave();
   }
 
   @Override
@@ -73,11 +65,11 @@ public class CreateOrEditNote extends AppCompatActivity {
     switch (item.getItemId()) {
 
       case R.id.action_del_note:
-        deleteDialog(mID).show();
+        deleteDialog(mData).show();
         break;
 
       case android.R.id.home:
-        saveNote();
+        promptSave();
         break;
 
       default:
@@ -87,85 +79,83 @@ public class CreateOrEditNote extends AppCompatActivity {
     return true;
   }
 
-  private AlertDialog deleteDialog(int id) {
-
-    final int deleteId = id;
-
+  private AlertDialog deleteDialog(final ReminderItem item) {
     return new AlertDialog.Builder(this)
-            .setTitle("Confirm")
-            .setMessage("Do you want to delete?")
-            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        .setTitle("Confirm")
+        .setMessage("Do you want to delete?")
+        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int i) {
+            deleteNote(item);
+          }
+        })
+        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+public void onClick(DialogInterface dialog, int i) {
+dialog.dismiss();
 
-              public void onClick(DialogInterface dialog, int i) {
-                if (deleteId > 0) {
-                  Uri uri = ContentUris.withAppendedId(ReminderContract.Notes.CONTENT_URI,
-                          deleteId);
-                  mContentResolver.delete(uri, null, null);
-                }
-                terminateActivity();
-              }
-
-            })
-            .setNegativeButton("No", new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int i) {
-                dialog.dismiss();
-
-              }
-            })
-            .create();
-
+}
+})
+        .create();
   }
 
-  private AlertDialog saveDialog(int id, String title, final String content) {
-    final int saveId = id;
-    final String saveMessage = content;
-    final String saveTitle = title;
+  private AlertDialog saveDialog(final ReminderItem item) {
 
     return new AlertDialog.Builder(this)
-
-            .setTitle("Confirm")
-            .setMessage("Do you want to save?")
-            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-
-              public void onClick(DialogInterface dialog, int whichButton) {
-                //if note exists, update. Otherwise insert new note.
-                if (saveId > 0) {
-                  ContentValues values = new ContentValues();
-                  values.put(ReminderContract.Notes.TITLE, saveTitle);
-                  values.put(ReminderContract.Notes.CONTENT, saveMessage);
-                  Uri uri = ContentUris.withAppendedId(ReminderContract.Notes.CONTENT_URI,
-                          saveId);
-                  mContentResolver.update(uri, values, null, null);
-                } else {
-                  ContentValues values = new ContentValues();
-                  values.put(ReminderContract.Notes.TYPE, ReminderContract.PATH_NOTE);
-                  values.put(ReminderContract.Notes.TITLE, saveTitle);
-                  values.put(ReminderContract.Notes.CONTENT, saveMessage);
-                  mContentResolver.insert(ReminderContract.Notes.CONTENT_URI, values);
-                }
-                terminateActivity();
-                dialog.dismiss();
-              }
-
-            })
-            .setNegativeButton("No", new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-                terminateActivity();
-                dialog.dismiss();
-
-              }
-            })
-            .create();
+        .setTitle("Confirm")
+        .setMessage("Do you want to save?")
+        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int whichButton) {
+            saveNote(item);
+            terminateActivity();
+            dialog.dismiss();
+          }
+        })
+        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int which) {
+            terminateActivity();
+            dialog.dismiss();
+          }
+        })
+        .create();
   }
 
   private void terminateActivity() {
     NavUtils.navigateUpFromSameTask(this);
   }
 
-  private void saveNote() {
-    String contentString = mContent.getText().toString();
-    String titleString = mTitle.getText().toString();
-    saveDialog(mID, titleString, contentString).show();
+  private void promptSave() {
+    mData.setTitle(mTitle.getText().toString());
+    mData.setContent(mContent.getText().toString());
+    saveDialog(mData).show();
   }
 
+  private void setActionBarTitle(ActionBar actionBar, String title) {
+    if (actionBar != null) {
+      actionBar.setTitle(title);
+      actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+  }
+
+  private void saveNote(ReminderItem item) {
+    if (item.getId() > 0) {
+      ContentValues values = new ContentValues();
+      values.put(ReminderContract.Notes.TITLE, item.getTitle());
+      values.put(ReminderContract.Notes.CONTENT, item.getContent());
+      Uri uri = ContentUris.withAppendedId(ReminderContract.Notes.CONTENT_URI, item.getId());
+      mContentResolver.update(uri, values, null, null);
+    } else {
+      ContentValues values = new ContentValues();
+      values.put(ReminderContract.Notes.TYPE, ReminderType.NOTE.getName());
+      values.put(ReminderContract.Notes.TITLE, item.getTitle());
+      values.put(ReminderContract.Notes.CONTENT, item.getContent());
+      mContentResolver.insert(ReminderContract.Notes.CONTENT_URI, values);
+    }
+  }
+
+  private void deleteNote(ReminderItem item) {
+    if (item != null) {
+      Uri uri = ContentUris.withAppendedId(ReminderContract.Notes.CONTENT_URI, item.getId());
+      mContentResolver.delete(uri, null, null);
+    }
+    terminateActivity();
+  }
 }

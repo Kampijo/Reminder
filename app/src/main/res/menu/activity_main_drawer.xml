@@ -1,4 +1,5 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
         <item
@@ -18,6 +19,4 @@
             android:title="@string/nav_settings"
             android:icon="@drawable/ic_settings_black_24dp"/>
     </group>
-
-
 </menu>

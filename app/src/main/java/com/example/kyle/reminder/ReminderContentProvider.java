@@ -1,8 +1,10 @@
 package com.example.kyle.reminder;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,7 +13,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 /**
  * Created by kyle on 10/06/17.
@@ -126,6 +127,16 @@ public class ReminderContentProvider extends ContentProvider {
   @Nullable
   @Override
   public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
+    Context context = getContext();
+    if (context == null) {
+      return null;
+    }
+
+    ContentResolver contentResolver = context.getContentResolver();
+    if (contentResolver == null) {
+      return null;
+    }
+
     if (URI_MATCHER.match(uri) != NOTE && URI_MATCHER.match(uri) != ALERT) {
       throw new IllegalArgumentException(
               "Unsupported URI for insertion: " + uri);
@@ -134,11 +145,11 @@ public class ReminderContentProvider extends ContentProvider {
     SQLiteDatabase db = mOpenHelper.getWritableDatabase();
     if (URI_MATCHER.match(uri) == NOTE) {
       long id = db.insert(ReminderContract.Notes.TABLE_NAME, null, contentValues);
-      getContext().getContentResolver().notifyChange(uri, null);
+      contentResolver.notifyChange(uri, null);
       return ContentUris.withAppendedId(uri, id);
     } else {
       long id = db.insert(ReminderContract.Alerts.TABLE_NAME, null, contentValues);
-      getContext().getContentResolver().notifyChange(uri, null);
+      contentResolver.notifyChange(uri, null);
       return ContentUris.withAppendedId(uri, id);
     }
   }
@@ -146,8 +157,20 @@ public class ReminderContentProvider extends ContentProvider {
   @Override
   public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
     SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-    int delCount = 0;
-    String id, where;
+    String id;
+    String where;
+    int delCount;
+
+    Context context = getContext();
+    if (context == null) {
+      return 0;
+    }
+
+    ContentResolver contentResolver = context.getContentResolver();
+    if (contentResolver == null) {
+      return 0;
+    }
+
     switch (URI_MATCHER.match(uri)) {
       case NOTE:
         delCount = db.delete(
@@ -187,7 +210,7 @@ public class ReminderContentProvider extends ContentProvider {
         throw new IllegalArgumentException("Unsupported URI: " + uri);
     }
     // notify all listeners of changes:
-    getContext().getContentResolver().notifyChange(uri, null);
+    contentResolver.notifyChange(uri, null);
     return delCount;
   }
 
@@ -195,7 +218,7 @@ public class ReminderContentProvider extends ContentProvider {
   public int update(@NonNull Uri uri, @Nullable ContentValues values,
                     @Nullable String selection, @Nullable String[] selectionArgs) {
     SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-    int updateCount = 0;
+    int updateCount;
     String id, where;
     switch (URI_MATCHER.match(uri)) {
       case NOTE:
@@ -237,12 +260,20 @@ public class ReminderContentProvider extends ContentProvider {
                 selectionArgs);
         break;
       default:
-        // no support for updating photos or entities
         throw new IllegalArgumentException("Unsupported URI: " + uri);
     }
     // notify all listeners of changes:
     if (updateCount > 0) {
-      getContext().getContentResolver().notifyChange(uri, null);
+      Context context = getContext();
+      if (context == null) {
+        return 0;
+      }
+
+      ContentResolver contentResolver = context.getContentResolver();
+      if (contentResolver == null) {
+        return 0;
+      }
+      contentResolver.notifyChange(uri, null);
     }
     return updateCount;
   }

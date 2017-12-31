@@ -10,27 +10,31 @@ import java.util.Calendar;
 /**
  * Created by kyle on 07/09/16.
  * <p/>
- * Gets alarms from ReminderDataHelper and sets alarms on reboot
+ * Gets alarms from content provider and sets them on reboot
  */
 
 public class AlarmSetter extends BroadcastReceiver {
 
   @Override
-  // once phone reboot complete, set back all alarms
   public void onReceive(Context context, Intent intent) {
-    ReminderDataHelper database = new ReminderDataHelper(context);
-    Cursor cursor = database.getAllItems();
+    Cursor cursor = context.getContentResolver().query(ReminderContract.All.CONTENT_URI,
+            null, null, null, null);
+
+    if (cursor == null || !cursor.moveToFirst()) {
+      return;
+    }
+
     try {
       while (cursor.moveToNext()) {
+        String type = cursor.getString(cursor.getColumnIndex(ReminderParams.TYPE));
+        long time = cursor.getLong(cursor.getColumnIndex(ReminderParams.TIME));
 
-        String type = cursor.getString(cursor.getColumnIndex(ReminderDataHelper.DB_COLUMN_TYPE));
-        long time = cursor.getLong(cursor.getColumnIndex(ReminderDataHelper.DB_COLUMN_TIME));
-
-        if (type.equals("alert") && time > Calendar.getInstance().getTimeInMillis()) {
+        if (ReminderType.fromString(type) == ReminderType.ALERT
+            && time > Calendar.getInstance().getTimeInMillis()) {
           Intent service = new Intent(context, AlarmService.class);
           service.setAction(AlarmService.CREATE);
-          service.putExtra("id",
-                  cursor.getInt(cursor.getColumnIndex(ReminderDataHelper.DB_COLUMN_ID)));
+          service.putExtra(ReminderParams.ID, cursor.getInt(cursor.getColumnIndex(
+              ReminderParams.ID)));
           context.startService(service);
         }
       }

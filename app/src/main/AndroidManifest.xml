@@ -2,55 +2,38 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.kyle.reminder">
 
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+  <application android:allowBackup="true" android:icon="@mipmap/ic_launcher"
+      android:label="@string/app_name" android:supportsRtl="true" android:theme="@style/AppTheme">
+    <activity android:name=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
 
-        <activity android:name=".CreateOrEditNote"
-            android:parentActivityName=".MainActivity" >
-        <meta-data
-            android:name="android.support.PARENT_ACTIVITY"
-            android:value=".MainActivity" />
-        />
-        </activity>
+    <activity android:name=".CreateOrEditNote" android:parentActivityName=".MainActivity">
+      <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity" />
+    </activity>
 
-        <activity android:name=".CreateOrEditAlert"
-            android:parentActivityName=".MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-            />
-        </activity>
-        <receiver android:name=".AlarmSetter">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-        <receiver android:name=".AlarmReceiver"
-                  android:enabled="true"> </receiver>
-        <service android:name=".AlarmService"
-                 android:enabled="true"></service>
-        <provider
-            android:name=".ReminderContentProvider"
-            android:authorities="com.example.kyle.reminder"
-            android:exported="true"
-            android:grantUriPermissions="true"
-            android:label="LentItemsProvider"
-            android:readPermission="com.example.kyle.reminder.READ"
-            android:writePermission="com.example.kyle.reminder.WRITE" />
-    </application>
+    <activity android:name=".CreateOrEditAlert" android:parentActivityName=".MainActivity">
+      <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity" />
+    </activity>
+    <receiver android:name=".AlarmSetter">
+      <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+      </intent-filter>
+    </receiver>
+    <receiver android:name=".AlarmReceiver" android:enabled="true" />
+    <service android:name=".AlarmService" android:enabled="true" />
+    <provider android:name=".ReminderContentProvider"
+        android:authorities="com.example.kyle.reminder" android:exported="true"
+        android:grantUriPermissions="true" android:label="LentItemsProvider"
+        android:readPermission="com.example.kyle.reminder.READ"
+        android:writePermission="com.example.kyle.reminder.WRITE" />
+  </application>
 
 
 </manifest>
