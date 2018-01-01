@@ -59,10 +59,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   public boolean onOptionsItemSelected(MenuItem item) {
-    if (mDrawerToggle.onOptionsItemSelected(item)) {
-      return true;
-    }
-    return super.onOptionsItemSelected(item);
+    return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
   }
 
   private void setupDrawer() {
@@ -83,17 +80,20 @@ public class MainActivity extends AppCompatActivity {
         switch (menuItem.getItemId()) {
           case R.id.nav_home:
             mDrawerLayout.closeDrawers();
-            Toast.makeText(getApplicationContext(), "Showing all items", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.show_all_toast,
+                Toast.LENGTH_SHORT).show();
             reloadReminders(ReminderType.ALL);
             break;
           case R.id.nav_alerts:
             mDrawerLayout.closeDrawers();
-            Toast.makeText(getApplicationContext(), "Showing all alerts", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.show_alerts_toast,
+                Toast.LENGTH_SHORT).show();
             reloadReminders(ReminderType.ALERT);
             break;
           case R.id.nav_notes:
             mDrawerLayout.closeDrawers();
-            Toast.makeText(getApplicationContext(), "Showing all notes", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.show_notes_toast,
+                Toast.LENGTH_SHORT).show();
             reloadReminders(ReminderType.NOTE);
             break;
           case R.id.nav_settings:

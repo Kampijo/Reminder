@@ -32,4 +32,8 @@
     <string name="save_prompt">Do you want to save?</string>
     <string name="delete_prompt">Are you sure you want to delete?</string>
     <string name="repeat">Repeat</string>
+
+    <string name="show_all_toast">Showing all items</string>
+    <string name="show_alerts_toast">Showing all alerts</string>
+    <string name="show_notes_toast">Showing all notes</string>
 </resources>
