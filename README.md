@@ -1,16 +1,14 @@
 # Reminder
-![Reminder](http://i.imgur.com/vZKZp65.png) <br/>
+![Reminder](assets/remindericon.png) <br/>
 A simple Android material design reminder app.
 
 # Features
 Allows you to add notes, remove notes, add alerts and remove alerts. <br/>
 Repeated alert intervals. <br/>
-Notification alerts.
+Notification alerts. <br/>
+<br/>
 
-![](http://i.imgur.com/ALpfiXel.png) ![](http://i.imgur.com/tCMZdNjl.png)
-![](http://i.imgur.com/5QzZJTWl.png) ![](http://i.imgur.com/KPW91sNl.png)
-
-NOTE: Screenshots outdated, not reflective of current state of the app.
+<img src="assets/reminder1.png" width="40%"><img src="assets/reminder2.png" width="40%" hspace="20">
 
 
 # Changelog
