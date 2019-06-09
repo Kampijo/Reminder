@@ -1,6 +1,7 @@
 package com.example.kyle.reminder;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
@@ -11,11 +12,17 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.WakefulBroadcastReceiver;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.util.Calendar;
+
+import static android.content.ContentValues.TAG;
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
  * Created by kyle on 07/09/16.
@@ -90,7 +97,9 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     NotificationCompat.BigTextStyle bigStyle = new NotificationCompat.BigTextStyle();
     bigStyle.setBigContentTitle(title);
     bigStyle.bigText(msg);
-    Notification n = new NotificationCompat.Builder(context)
+
+    //original
+    /*Notification n = new NotificationCompat.Builder(context)
             .setSmallIcon(R.drawable.ic_calendar_check_black_48dp)
             .setContentTitle(title)
             .setContentText(msg)
@@ -108,7 +117,31 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     NotificationManager notificationManager = (NotificationManager)
             context.getSystemService(Context.NOTIFICATION_SERVICE);
-    notificationManager.notify(id, n);
+
+    notificationManager.notify(id, n);*/
+
+    //DavidKongKK 2019.6.9:Fixed issue:Alert not working due to notification channel
+    String channelId = "my_channel_01";
+    String name="Alarm Notification";
+    NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+    Notification notification=null;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      NotificationChannel mChannel = new NotificationChannel(channelId, name, NotificationManager.IMPORTANCE_LOW);
+      notificationManager.createNotificationChannel(mChannel);
+      notification = new Notification.Builder(context)
+              .setChannelId(channelId)
+              .setContentTitle(title)
+              .setContentText(msg)
+              .setSmallIcon(R.mipmap.ic_launcher).build();
+    } else {
+      NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
+              .setContentTitle(title)
+              .setContentText(msg)
+              .setSmallIcon(R.mipmap.ic_launcher)
+              .setOngoing(true);
+      notification = notificationBuilder.build();
+    }
+    notificationManager.notify(id, notification);
 
 
   }
