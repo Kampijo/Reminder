@@ -1,4 +1,6 @@
-# Reminder
+# Reminder (DEPRECATED)
+__Note__: This application has no semblance of any good software engineering practices. This is just an early exploration of what I did to make a functioning Android app. All APIs used in this application are extremely outdated, refer to the latest Android documentation for best practices. </br>
+
 ![Reminder](assets/remindericon.png) <br/>
 A simple Android material design reminder app.
 
